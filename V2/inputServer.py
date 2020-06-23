@@ -87,7 +87,7 @@ def areSeedsUnique(playerList):  # Returns True if players have valid and unique
     seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     seedsValid = min(seeds) > 0  # checks if all seeds are valid - if a seed is invalid it is less than or equal to 0
     return seedsUnique and seedsValid  # True if both conditions are met
-            
+
 #def createBracket(bracketStyle, playerList):
 
 #def updateBracket(GameID, score1, score2):
@@ -129,6 +129,11 @@ def editPlayerPage():
         except:
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+
+@app.route('/finishSeeding', methods = ['POST'])
+def finishSeeding():
+    manager.playerList = createSeeding(manager.playerList)
+    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
