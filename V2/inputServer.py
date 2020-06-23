@@ -119,7 +119,13 @@ def editPlayerPage():
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
     if request.method == 'POST':
         try:
+            tempList = manager.playerList
             manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            if areSeedsUnique(manager.playerList) == True:
+                print('Seeding finalised succesfully')
+            else:
+                print('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                manager.playerList = tempList
         except:
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
