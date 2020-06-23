@@ -1,6 +1,5 @@
 from flask import Flask, url_for, send_from_directory, request, render_template
 import re
-import os
 import pickle
 from datetime import datetime
 app = Flask(__name__, static_url_path='/static')
@@ -37,7 +36,7 @@ class PlayerManager:
 
 manager = PlayerManager()
 
-def setDefaultValues(player1, player2):
+#def setDefaultValues(player1, player2):
     f = open('templates\InputSiteTemplate.html', 'r')
     preFile = f.read()
     f.close()
