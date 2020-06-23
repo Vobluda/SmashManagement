@@ -70,7 +70,7 @@ def backup(object, fileName):
         pickle.dump(object, openedFile)
 
 def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
-    seeds = [i.seed for i in playerList]  # iterate over the playerList and get the player seeds into one handy list
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     valid_seeds = [i for i in seeds if i > 0]  # make a list with only the valid seeds, a seed is valid if > 0
     missing_seed_indices = [i for i in range(len(seeds)) if not seeds[i] > 0]  # make a list with the indices of players that have missing seeds
     current_seed_value = 1  # set the loop counter to 1, because it's the lowest valid seed
@@ -80,14 +80,14 @@ def createSeeding(playerList):  # Find players whose seeds are missing and assig
             playerList[selected_player_index].seed = current_seed_value  # assign the player the current seed value
             missing_seed_indices.remove(selected_player_index)  # remove the player's index from the list
         current_seed_value += 1  # increment the counter
-    manager.playerList = playerList  # reassigns to manager playerList used in other parts
+    return playerList  # return the modified playerList - this may not be needed?
 
 def areSeedsUnique(playerList):  # Returns True if players have valid and unique seeds.
-    seeds = [i.seed for i in playerList]  # iterate over the playerList and get the player seeds into one handy list
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     seedsValid = min(seeds) > 0  # checks if all seeds are valid - if a seed is invalid it is less than or equal to 0
     return seedsUnique and seedsValid  # True if both conditions are met
-
+            
 #def createBracket(bracketStyle, playerList):
 
 #def updateBracket(GameID, score1, score2):
@@ -129,11 +129,6 @@ def editPlayerPage():
         except:
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
-
-@app.route('/finishSeeding', methods = ['POST'])
-def finishSeeding():
-    createSeeding(manager.playerList)
-    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
