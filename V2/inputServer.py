@@ -1,6 +1,7 @@
 from flask import Flask, url_for, send_from_directory, request, render_template
 import re
 import pickle
+import random  # for assigning seeds to random players
 from datetime import datetime
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object('config')
@@ -68,8 +69,19 @@ def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
 
-#def createSeeding(playerList):
-
+def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
+    seeds = [i.seed for i in playerList]  # iterate over the playerList and get the player seeds into one handy list
+    valid_seeds = [i for i in seeds if i > 0]  # make a list with only the valid seeds, a seed is valid if > 0
+    missing_seed_indices = [i for i in range(len(seeds)) if not seeds[i] > 0]  # make a list with the indices of players that have missing seeds
+    current_seed_value = 1  # set the loop counter to 1, because it's the lowest valid seed
+    while missing_seed_indices:  # loop while there are still some missing seeds (list is True unless empty)
+        if current_seed_value not in valid_seeds:  # if the current seed value has not yet been used
+            selected_player_index = random.choice(missing_seed_indices)  # pick a random player index with a missing seed
+            playerList[selected_player_index].seed = current_seed_value  # assign the player the current seed value
+            missing_seed_indices.remove(selected_player_index)  # remove the player's index from the list
+        current_seed_value += 1  # increment the counter
+    return playerList  # return the modified playerList - this may not be needed?
+            
 #def createBracket(bracketStyle, playerList):
 
 #def updateBracket(GameID, score1, score2):
