@@ -78,6 +78,8 @@ def backup(object, fileName):
 
 #def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
+#def readBackup(objectFile):
+
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
