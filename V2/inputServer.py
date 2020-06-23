@@ -80,7 +80,7 @@ def createSeeding(playerList):  # Find players whose seeds are missing and assig
             playerList[selected_player_index].seed = current_seed_value  # assign the player the current seed value
             missing_seed_indices.remove(selected_player_index)  # remove the player's index from the list
         current_seed_value += 1  # increment the counter
-    return playerList  # return the modified playerList - this may not be needed?
+    return playerList  # return the modified playerList
 
 def areSeedsUnique(playerList):  # Returns True if players have valid and unique seeds.
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
