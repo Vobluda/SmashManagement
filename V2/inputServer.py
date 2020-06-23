@@ -36,7 +36,7 @@ class PlayerManager:
 
 manager = PlayerManager()
 
-#def setDefaultValues(player1, player2):
+'''def setDefaultValues(player1, player2):
     f = open('templates\InputSiteTemplate.html', 'r')
     preFile = f.read()
     f.close()
@@ -61,7 +61,7 @@ manager = PlayerManager()
         f.write(file)
         f.close
     except:
-        pass
+        pass'''
 
 def backup(object, fileName):
     dateTimeObj = datetime.now()
