@@ -68,6 +68,16 @@ def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
 
+#def createSeeding(playerList):
+
+#def createBracket(bracketStyle, playerList):
+
+#def updateBracket(GameID, score1, score2):
+
+#def updateOverlayVals(GameID):
+
+#def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
+
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
@@ -95,22 +105,11 @@ def editPlayerPage():
         except:
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
     backup(manager.playerList, 'Backups/playerBackup')
     return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
-
-@app.route('/saveVals', methods = ['POST'])
-def saveVals():
-    player1.IGN = request.form['p1']
-    player1.score = request.form['p1s']
-    player1.character = request.form['character1']
-    player2.IGN = request.form['p2']
-    player2.score = request.form['p2s']
-    player2.character = request.form['character2']
-    game.status = request.form['status']
-    setDefaultValues(player1, player2)
-    return render_template('InputSiteTemplate.html', player1=player1, player2=player2, game=game)
 
 if __name__ == '__main__':
     app.run()
