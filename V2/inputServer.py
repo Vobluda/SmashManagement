@@ -82,6 +82,12 @@ def createSeeding(playerList):  # Find players whose seeds are missing and assig
         current_seed_value += 1  # increment the counter
     manager.playerList = playerList  # reassigns to manager playerList used in other parts
 
+def areSeedsUnique(playerList):  # Returns True if players have valid and unique seeds.
+    seeds = [i.seed for i in playerList]  # iterate over the playerList and get the player seeds into one handy list
+    seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
+    seedsValid = min(seeds) > 0  # checks if all seeds are valid - if a seed is invalid it is less than or equal to 0
+    return seedsUnique and seedsValid  # True if both conditions are met
+
 #def createBracket(bracketStyle, playerList):
 
 #def updateBracket(GameID, score1, score2):
