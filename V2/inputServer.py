@@ -72,7 +72,7 @@ def backup(object, fileName):
 @app.route('/')
 def mainPage():
     printVals(player1, player2)
-    return render_template('AtomTestingTemplate.html', player1=player1, player2=player2, game=game)
+    return render_template('OverlayTemplate.html', player1=player1, player2=player2, game=game)
 
 @app.route('/<path:path>')
 def getImage(path):
