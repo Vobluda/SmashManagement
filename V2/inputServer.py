@@ -2,6 +2,7 @@ from flask import Flask, url_for, send_from_directory, request, render_template
 import re
 import pickle
 import random  # for assigning seeds to random players
+import math
 from datetime import datetime
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object('config')
@@ -17,7 +18,17 @@ class Player:
 
 
 class Game:
-    def __init__(self, player1, player2, BO, name):
+    def __init__(self, seedindex1, seedindex2):  # initialize an "empty" game without players
+        self.seedindex1 = seedindex1  # seed *index*, not the actual seed
+        self.seedindex2 = seedindex2
+        self.player1 = None
+        self.player2 = None
+        self.winner = None
+        self.score = []
+        self.BO = None
+        self.name = None
+
+    def players(self, player1, player2, BO, name):
         self.player1 = player1
         self.player2 = player2
         self.winner = None
@@ -27,7 +38,7 @@ class Game:
 
 class Tournament:
     def __init__(self):
-        self.games = []
+        self.rounds = []
         self.currentGame = None
 
 class PlayerManager:
@@ -91,13 +102,23 @@ def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
     seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     return seedsUnique
 
-'''
-def createSingleElim(playerList):
-    playerList = createSeeding(playerList)
-    if not areSeedsUnique(playerList):
-        raise Exception('An error has occurred, as seeding is not unique. Try again')
-'''
-
+def createSingleElimTemplate(playerNumber):
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible game number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    template = Tournament()  # create a tournament object
+    for currentRound in range(0, gameNumber):  # loop over the round indices
+        Tournament.rounds.append([])
+        if currentRound == 0:
+            Tournament.rounds[currentRound] = [Game(1, 2)]
+        else:
+            for currentGame in range(int(2 ** currentRound)):
+                if currentGame % 2 == 0:
+                    seedindex1 = Tournament.rounds[currentRound - 1][currentGame // 2].seedindex1
+                else:
+                    seedindex1 = Tournament.rounds[currentRound - 1][currentGame // 2].seedindex2
+                seedindex2 = int(2 ** currentRound) + 1 - seedindex1
+                Tournament.rounds[currentRound].append(Game(seedindex1,seedindex2))
+    return Tournament
 
 
 #def updateBracket(GameID, score1, score2):
