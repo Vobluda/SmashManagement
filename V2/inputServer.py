@@ -1,6 +1,7 @@
 from flask import Flask, url_for, send_from_directory, request, render_template
 import re
 import pickle
+import random  # for assigning seeds to random players
 from datetime import datetime
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object('config')
@@ -68,7 +69,27 @@ def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
 
-#def createSeeding(playerList):
+def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    valid_seeds = [i for i in seeds if i > 0]  # make a list with only the valid seeds, a seed is valid if > 0
+    missing_seed_indices = [i for i in range(len(seeds)) if not seeds[i] > 0]  # make a list with the indices of players that have missing seeds
+    current_seed_value = 1  # set the loop counter to 1, because it's the lowest valid seed
+    while missing_seed_indices:  # loop while there are still some missing seeds (list is True unless empty)
+        if current_seed_value not in valid_seeds:  # if the current seed value has not yet been used
+            selected_player_index = random.choice(missing_seed_indices)  # pick a random player index with a missing seed
+            playerList[selected_player_index].seed = current_seed_value  # assign the player the current seed value
+            missing_seed_indices.remove(selected_player_index)  # remove the player's index from the list
+        current_seed_value += 1  # increment the counter
+    return playerList  # return the modified playerList
+
+def areSeedsValid(playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    return min(seeds) > 0 and max(seeds) <= len(playerList)  # returns True if the lowest and highest seed are between 1 and the number of players.
+
+def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
+    return seedsUnique
 
 #def createBracket(bracketStyle, playerList):
 
@@ -103,10 +124,21 @@ def editPlayerPage():
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
     if request.method == 'POST':
         try:
+            tempList = manager.playerList
             manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            if areSeedsUnique(manager.playerList) == True:
+                print('Seeding finalised succesfully')
+            else:
+                print('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                manager.playerList = tempList
         except:
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+
+@app.route('/finishSeeding', methods = ['POST'])
+def finishSeeding():
+    manager.playerList = createSeeding(manager.playerList)
+    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
