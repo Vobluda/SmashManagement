@@ -31,7 +31,9 @@
 
   </div>
 
-  <form action="/addPlayers" method="post" id="addForm">
+  <form action="/setup" method="post" id="addForm">
+    <input type='text' name='formIdentifier' value='addForm' id='hidden'></input>
+
     <label>IGN</label><br>
     <input type="text" name="IGN"></input><br>
 
@@ -42,7 +44,7 @@
     <input type="number" name="seed"></input><br>
 
     <label for="main">Main</label>
-    <select id="main" name="main" form="form">
+    <select id="main" name="main" form="addForm">
       <option value="Banjo&Kazooie">Banjo&Kazooie</option>
       <option value="Bayonetta">Bayonetta</option>
       <option value="Bowser">Bowser</option>
@@ -125,7 +127,9 @@
     <input type="submit" value="Submit">
   </form>
 
-  <!--<form action="/editPlayers" method="post" id="editForm">
+  <form action="/setup" method="post" id="editForm">
+    <input type='text' name='formIdentifier' value='editForm' id='hidden'></input>
+
     <label>ID</label><br>
     <input type="number" name="ID"></input><br>
 
@@ -139,7 +143,7 @@
     <input type="number" name="seed"></input><br>
 
     <label for="main">Main</label>
-    <select id="main" name="main" form="form">
+    <select id="main" name="main" form="editForm">
       <option value="Banjo&Kazooie">Banjo&Kazooie</option>
       <option value="Bayonetta">Bayonetta</option>
       <option value="Bowser">Bowser</option>
@@ -222,13 +226,16 @@
     <input type="submit" value="Submit">
   </form><br>
 
-  <form action="/finalisePlayers" method="post" id="form">
+  <form action="/setup" method="post" id="finaliseForm">
+    <input type='text' name='formIdentifier' value='finaliseForm' id='hidden'></input>
     <input type="submit" value="Finalise">
   </form><br><br>
-  <form action="/backupPlayers" method="post" id="backupform">
+  <form action="/setup" method="post" id="backupform">
+    <input type='text' name='formIdentifier' value='backupForm' id='hidden'></input>
     <input type="submit" value="Backup">
   </form><br><br>
-  <form action="/retrievePlayerBackups" method="post" id="retrieveBackupForm">
+  <form action="/setup" method="post" id="retrieveBackupForm">
+    <input type='text' name='formIdentifier' value='retrieveBackupForm' id='hidden'></input>
     <input type="submit" value="Retreive Backup">
   </form><br><br>-->
 

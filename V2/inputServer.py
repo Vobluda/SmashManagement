@@ -165,58 +165,46 @@ def controlPanel():
 
 @app.route('/setup', methods = ['GET', 'POST'])
 def setup():
-    return render_template('SetupTemplate.html', playerList = manager.playerList)
-
-@app.route('/addPlayers', methods = ['GET', 'POST'])
-def playerPage():
     if request.method == 'GET':
-        return redirect('/setup')
+        return render_template('SetupTemplate.html', playerList = manager.playerList)
     if request.method == 'POST':
-        print(request.json)
-        if request.form['seed'] == '':
-            player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
-        else:
-            player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-        manager.playerList.append(player)
-        return redirect('/setup')
 
-@app.route('/editPlayers', methods = ['GET', 'POST'])
-def editPlayerPage():
-    if request.method == 'GET':
-        return redirect('/setup')
-    if request.method == 'POST':
-        try:
-            tempList = manager.playerList
-            manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-            print(request.json)
-            if areSeedsUnique(manager.playerList) == True:
-                print('Seeding finalised succesfully')
+        if request.form['formIdentifier'] == 'addForm':
+            if request.form['seed'] == '':
+                player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
             else:
-                raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
-                manager.playerList = tempList
-        except IndexError:
-            print("ID input is out of range")
-        return redirect('/setup')
+                player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            manager.playerList.append(player)
 
-@app.route('/finalisePlayers', methods = ['POST'])
-def finishSeeding():
-    manager.playerList = createSeeding(manager.playerList)
-    i = 1
-    for player in manager.playerList:
-        player.ID = i
-        i = i + 1
-    return redirect('/setup')
+        if request.form['formIdentifier'] == 'editForm':
+            try:
+                tempList = manager.playerList
+                manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+                print(request.json)
+                if areSeedsUnique(manager.playerList) == True:
+                    print('Seeding finalised succesfully')
+                else:
+                    raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                    manager.playerList = tempList
+            except IndexError:
+                print("ID input is out of range")
 
-@app.route('/backupPlayers', methods = ['POST'])
-def createBackup():
-    backup(manager.playerList, 'Backups/playerBackup')
-    return redirect('/setup')
+        if request.form['formIdentifier'] == 'finaliseForm':
+            manager.playerList = createSeeding(manager.playerList)
+            i = 1
+            for player in manager.playerList:
+                player.ID = i
+                i = i + 1
 
-@app.route('/retrievePlayerBackups', methods = ['POST'])
-def retrieveBackup():
-    readBackupPlayers('Backups/playerBackup')
-    manager.ID = len(manager.playerList)+1
-    return redirect('/setup')
+        if request.form['formIdentifier'] == 'backupform':
+            backup(manager.playerList, 'Backups/playerBackup')
+
+        if request.form['formIdentifier'] == 'retrieveBackupForm':
+            readBackupPlayers('Backups/playerBackup')
+            manager.ID = len(manager.playerList)+1
+
+        return render_template('SetupTemplate.html', playerList = manager.playerList)
+
 
 if __name__ == '__main__':
     app.run()
