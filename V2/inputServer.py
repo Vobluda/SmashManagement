@@ -106,7 +106,7 @@ def createSingleElimTemplate(playerNumber):
     roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     template = Tournament()  # create a tournament object
-    for currentRound in range(0, gameNumber):  # loop over the round indices
+    for currentRound in range(0, roundNumber):  # loop over the round indices
         Tournament.rounds.append([])
         if currentRound == 0:
             Tournament.rounds[currentRound] = [Game(1, 2)]
