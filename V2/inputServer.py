@@ -91,7 +91,14 @@ def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
     seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     return seedsUnique
 
-#def createBracket(bracketStyle, playerList):
+'''
+def createSingleElim(playerList):
+    playerList = createSeeding(playerList)
+    if not areSeedsUnique(playerList):
+        raise Exception('An error has occurred, as seeding is not unique. Try again')
+'''
+
+
 
 #def updateBracket(GameID, score1, score2):
 
@@ -129,9 +136,9 @@ def editPlayerPage():
             if areSeedsUnique(manager.playerList) == True:
                 print('Seeding finalised succesfully')
             else:
-                print('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
                 manager.playerList = tempList
-        except:
+        except IndexError:
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
