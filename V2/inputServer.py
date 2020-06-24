@@ -118,7 +118,7 @@ def createSingleElimTemplate(playerNumber):
                     seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex2
                 seedindex2 = int(2 ** currentRound) + 1 - seedindex1
                 template.rounds[currentRound].append(Game(seedindex1,seedindex2))
-    return Tournament
+    return template
 
 
 #def updateBracket(GameID, score1, score2):
