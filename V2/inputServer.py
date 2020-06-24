@@ -15,6 +15,7 @@ class Player:
         self.main = main
         self.school = school
         self.seed = seed
+        self.currentChar = None
 
 
 class Game:
@@ -45,35 +46,9 @@ class PlayerManager:
     def __init__(self):
         self.ID = 1
         self.playerList = []
+        self.currentGame = None
 
 manager = PlayerManager()
-
-'''def setDefaultValues(player1, player2):
-    f = open('templates\InputSiteTemplate.html', 'r')
-    preFile = f.read()
-    f.close()
-    file = preFile.replace(' selected', '')
-    p1Matches = re.finditer(player1.character, file)
-    p1List = [match.start() for match in p1Matches]
-    try:
-        pre = file[0:(p1List[0]-7)]
-        post = file[(p1List[0]-7):]
-        file = pre + "selected " + post
-        p2Matches = re.finditer(player2.character, file)
-        p2List = [match.start() for match in p2Matches]
-        if player2.character == 'Bowser':
-            pre = file[0:(p2List[3]-7)]
-            post = file[(p2List[3]-7):]
-        else:
-            pre = file[0:(p2List[2]-7)]
-            post = file[(p2List[2]-7):]
-        file = pre + "selected " + post
-        os.remove('templates\InputSiteTemplate.html')
-        f = open('templates\InputSiteTemplate.html', 'w')
-        f.write(file)
-        f.close
-    except:
-        pass'''
 
 def backup(object, fileName):
     dateTimeObj = datetime.now()
@@ -145,6 +120,10 @@ def playerPage():
         manager.ID = manager.ID + 1
         manager.playerList.append(player)
         return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+
+@app.route('/overlay', methods = ['GET'])
+def playerPage():
+    return render_template('OverlayTemplate.html', game=manager.currentGame)
 
 @app.route('/editPlayers', methods = ['GET', 'POST'])
 def editPlayerPage():
