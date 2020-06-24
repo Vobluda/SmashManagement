@@ -20,7 +20,7 @@
 
   <form action="/editPlayers" method="post" id="form">
     <label>ID</label><br>
-    <input type="text" name="ID"></input><br>
+    <input type="number" name="ID"></input><br>
 
     <label>IGN</label><br>
     <input type="text" name="IGN"></input><br>
@@ -114,7 +114,13 @@
 
     <input type="submit" value="Submit">
   </form><br>
-  <form action="/finishSeeding" method="post" id="form">
-    <input type="submit" value="Finilise Seeding">
-  </form>
+  <form action="/finalisePlayers" method="post" id="form">
+    <input type="submit" value="Finalise">
+  </form><br><br><br>
+  <form action="/backupPlayers" method="post" id="backupform">
+    <input type="submit" value="Backup">
+  </form><br>
+  <form action="/retrievePlayerBackups" method="post" id="retrieveBackupForm">
+    <input type="submit" value="Retreive Backup">
+  </form><br>
 </html>

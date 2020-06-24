@@ -2,10 +2,13 @@ from flask import Flask, url_for, send_from_directory, request, render_template
 import re
 import pickle
 import random  # for assigning seeds to random players
+import math
 from datetime import datetime
+
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object('config')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
 
 class Player:
     def __init__(self, ID, IGN, main, school, seed):
@@ -14,10 +17,21 @@ class Player:
         self.main = main
         self.school = school
         self.seed = seed
+        self.currentChar = None
 
 
 class Game:
-    def __init__(self, player1, player2, BO, name):
+    def __init__(self, seedindex1, seedindex2):  # initialize an "empty" game without players
+        self.seedindex1 = seedindex1  # seed *index*, not the actual seed
+        self.seedindex2 = seedindex2
+        self.player1 = None
+        self.player2 = None
+        self.winner = None
+        self.score = []
+        self.BO = None
+        self.name = None
+
+    def players(self, player1, player2, BO, name):
         self.player1 = player1
         self.player2 = player2
         self.winner = None
@@ -25,49 +39,30 @@ class Game:
         self.BO = BO
         self.name = name
 
+
 class Tournament:
     def __init__(self):
-        self.games = []
+        self.rounds = []
         self.currentGame = None
+
 
 class PlayerManager:
     def __init__(self):
-        self.ID = 1
         self.playerList = []
+        self.ID = len(self.playerList) + 1
+        self.currentGame = None
 
-manager = PlayerManager()
-
-'''def setDefaultValues(player1, player2):
-    f = open('templates\InputSiteTemplate.html', 'r')
-    preFile = f.read()
-    f.close()
-    file = preFile.replace(' selected', '')
-    p1Matches = re.finditer(player1.character, file)
-    p1List = [match.start() for match in p1Matches]
-    try:
-        pre = file[0:(p1List[0]-7)]
-        post = file[(p1List[0]-7):]
-        file = pre + "selected " + post
-        p2Matches = re.finditer(player2.character, file)
-        p2List = [match.start() for match in p2Matches]
-        if player2.character == 'Bowser':
-            pre = file[0:(p2List[3]-7)]
-            post = file[(p2List[3]-7):]
-        else:
-            pre = file[0:(p2List[2]-7)]
-            post = file[(p2List[2]-7):]
-        file = pre + "selected " + post
-        os.remove('templates\InputSiteTemplate.html')
-        f = open('templates\InputSiteTemplate.html', 'w')
-        f.write(file)
-        f.close
-    except:
-        pass'''
 
 def backup(object, fileName):
-    dateTimeObj = datetime.now()
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
+
+
+def readBackupPlayers(objectFile):
+    with open(objectFile, 'rb') as openedFile:
+        manager.playerList = pickle.load(openedFile)
+    print('Backup of players retrieved')
+
 
 def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
@@ -82,68 +77,143 @@ def createSeeding(playerList):  # Find players whose seeds are missing and assig
         current_seed_value += 1  # increment the counter
     return playerList  # return the modified playerList
 
+
 def areSeedsValid(playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     return min(seeds) > 0 and max(seeds) <= len(playerList)  # returns True if the lowest and highest seed are between 1 and the number of players.
 
+
 def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    while 0 in seeds:
+        seeds.remove(0)
     seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     return seedsUnique
 
-#def createBracket(bracketStyle, playerList):
 
-#def updateBracket(GameID, score1, score2):
+def createSingleElimTemplate(playerNumber):
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible game number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    template = Tournament()  # create a tournament object
+    for currentRound in range(0, roundNumber):  # loop over the round indices
+        template.rounds.append([])
+        if currentRound == 0:
+            template.rounds[currentRound] = [Game(1, 2)]
+        else:
+            for currentGame in range(int(2 ** currentRound)):
+                if currentGame % 2 == 0:
+                    seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex1
+                else:
+                    seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex2
+                seedindex2 = int(2 ** (currentRound + 1)) + 1 - seedindex1
+                template.rounds[currentRound].append(Game(seedindex1, seedindex2))
+    template.rounds = template.rounds[::-1]
+    return template
 
-#def updateOverlayVals(GameID):
 
-#def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
+def createSingleElimTournament(playerList):
+    playerList = createSeeding(playerList)
+    if not areSeedsUnique(playerList):
+        raise Exception('An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
+    roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    while len(playerList) < playerNumber:
+        playerList.append(Player(0, "Null", "Null", "Null", 0))
+    playerList = createSeeding(playerList)
+    tournament = createSingleElimTemplate(playerNumber)
+    for current_seed in range(1, playerNumber + 1):
+        player_with_seed = None
+        game_seed_index = None
+        seed_1_or_2 = None
+        for current_seed_b in range(playerNumber):
+            if playerList[current_seed_b].seed == current_seed:
+                player_with_seed = playerList[current_seed_b]
+            if tournament.rounds[0][current_seed_b // 2].seedindex1 == current_seed:
+                game_seed_index = current_seed_b // 2
+                seed_1_or_2 = 1
+            if tournament.rounds[0][current_seed_b // 2].seedindex2 == current_seed:
+                game_seed_index = current_seed_b // 2
+                seed_1_or_2 = 2
+        if seed_1_or_2 == 1:
+            tournament.rounds[0][game_seed_index].player1 = player_with_seed
+        elif seed_1_or_2 == 2:
+            tournament.rounds[0][game_seed_index].player2 = player_with_seed
+    return tournament
 
-#def readBackup(objectFile):
+
+# def updateBracket(GameID, score1, score2):
+
+# def updateOverlayVals(GameID):
+
+# def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
+
+
+manager = PlayerManager()
+
 
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
 
-@app.route('/addPlayers', methods = ['GET', 'POST'])
+
+@app.route('/addPlayers', methods=['GET', 'POST'])
 def playerPage():
     if request.method == 'GET':
-        return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+        return render_template('AddPlayersTemplate.html', playerList=manager.playerList)
     if request.method == 'POST':
         if request.form['seed'] == '':
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
         else:
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-        manager.ID = manager.ID + 1
         manager.playerList.append(player)
-        return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+        return render_template('AddPlayersTemplate.html', playerList=manager.playerList)
 
-@app.route('/editPlayers', methods = ['GET', 'POST'])
+
+@app.route('/overlay', methods=['GET'])
+def overlayPage():
+    return render_template('OverlayTemplate.html', game=manager.currentGame)
+
+
+@app.route('/editPlayers', methods=['GET', 'POST'])
 def editPlayerPage():
     if request.method == 'GET':
-        return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+        return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
     if request.method == 'POST':
         try:
             tempList = manager.playerList
-            manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            manager.playerList[int(request.form['ID']) - 1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
             if areSeedsUnique(manager.playerList) == True:
                 print('Seeding finalised succesfully')
             else:
-                print('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                raise Exception('An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
                 manager.playerList = tempList
-        except:
+        except IndexError:
             print("ID input is out of range")
-        return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+        return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
 
-@app.route('/finishSeeding', methods = ['POST'])
+
+@app.route('/finalisePlayers', methods=['POST'])
 def finishSeeding():
     manager.playerList = createSeeding(manager.playerList)
-    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+    i = 1
+    for player in manager.playerList:
+        player.ID = i
+        i = i + 1
+    return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
 
-@app.route('/backupPlayers', methods = ['POST'])
+
+@app.route('/backupPlayers', methods=['POST'])
 def createBackup():
     backup(manager.playerList, 'Backups/playerBackup')
-    return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+    return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+
+
+@app.route('/retrievePlayerBackups', methods=['POST'])
+def retrieveBackup():
+    readBackupPlayers('Backups/playerBackup')
+    manager.ID = len(manager.playerList) + 1
+    return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+
 
 if __name__ == '__main__':
     app.run()
