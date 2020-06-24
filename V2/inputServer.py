@@ -170,23 +170,25 @@ def setup():
 @app.route('/addPlayers', methods = ['GET', 'POST'])
 def playerPage():
     if request.method == 'GET':
-        return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+        return redirect('/setup')
     if request.method == 'POST':
+        print(request.json)
         if request.form['seed'] == '':
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
         else:
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
         manager.playerList.append(player)
-        return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+        return redirect('/setup')
 
 @app.route('/editPlayers', methods = ['GET', 'POST'])
 def editPlayerPage():
     if request.method == 'GET':
-        return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+        return redirect('/setup')
     if request.method == 'POST':
         try:
             tempList = manager.playerList
             manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            print(request.json)
             if areSeedsUnique(manager.playerList) == True:
                 print('Seeding finalised succesfully')
             else:
@@ -194,7 +196,7 @@ def editPlayerPage():
                 manager.playerList = tempList
         except IndexError:
             print("ID input is out of range")
-        return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+        return redirect('/setup')
 
 @app.route('/finalisePlayers', methods = ['POST'])
 def finishSeeding():
@@ -203,18 +205,18 @@ def finishSeeding():
     for player in manager.playerList:
         player.ID = i
         i = i + 1
-    return redirect('/editPlayers')
+    return redirect('/setup')
 
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
     backup(manager.playerList, 'Backups/playerBackup')
-    return redirect('/editPlayers')
+    return redirect('/setup')
 
 @app.route('/retrievePlayerBackups', methods = ['POST'])
 def retrieveBackup():
     readBackupPlayers('Backups/playerBackup')
     manager.ID = len(manager.playerList)+1
-    return redirect('/editPlayers')
+    return redirect('/setup')
 
 if __name__ == '__main__':
     app.run()
