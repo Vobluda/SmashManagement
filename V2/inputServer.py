@@ -44,16 +44,20 @@ class Tournament:
 
 class PlayerManager:
     def __init__(self):
-        self.ID = 1
         self.playerList = []
+        self.ID = len(self.playerList)+1
         self.currentGame = None
 
 manager = PlayerManager()
 
 def backup(object, fileName):
-    dateTimeObj = datetime.now()
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
+
+def readBackupPlayers(objectFile):
+    with open(objectFile, 'rb') as openedFile:
+        manager.playerList = pickle.load(openedFile)
+    print('Backup of players retrieved')
 
 def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
@@ -74,6 +78,8 @@ def areSeedsValid(playerList):  # Returns True if all seeds are valid but not un
 
 def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    while 0 in seeds:
+        seeds.remove(0)
     seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     return seedsUnique
 
@@ -102,8 +108,6 @@ def createSingleElimTemplate(playerNumber):
 
 #def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
-#def readBackup(objectFile):
-
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
@@ -117,12 +121,11 @@ def playerPage():
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
         else:
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-        manager.ID = manager.ID + 1
         manager.playerList.append(player)
         return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
 
 @app.route('/overlay', methods = ['GET'])
-def playerPage():
+def overlayPage():
     return render_template('OverlayTemplate.html', game=manager.currentGame)
 
 @app.route('/editPlayers', methods = ['GET', 'POST'])
@@ -142,15 +145,25 @@ def editPlayerPage():
             print("ID input is out of range")
         return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
-@app.route('/finishSeeding', methods = ['POST'])
+@app.route('/finalisePlayers', methods = ['POST'])
 def finishSeeding():
     manager.playerList = createSeeding(manager.playerList)
+    i = 1
+    for player in manager.playerList:
+        player.ID = i
+        i = i + 1
     return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
     backup(manager.playerList, 'Backups/playerBackup')
-    return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
+    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+
+@app.route('/retrievePlayerBackups', methods = ['POST'])
+def retrieveBackup():
+    readBackupPlayers('Backups/playerBackup')
+    manager.ID = len(manager.playerList)+1
+    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
 
 if __name__ == '__main__':
     app.run()
