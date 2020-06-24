@@ -24,14 +24,18 @@ class Game:
         self.seedindex2 = seedindex2
         self.player1 = None
         self.player2 = None
+        self.player1Char = None
+        self.player2Char = None
         self.winner = None
         self.score = []
         self.BO = None
         self.name = None
 
-    def players(self, player1, player2, BO, name):
+    def players(self, player1, player2, player1Char, player2Char, BO, name):
         self.player1 = player1
         self.player2 = player2
+        self.player1Char = player1Char
+        self.player2Char = player2Char
         self.winner = None
         self.score = []
         self.BO = BO
@@ -49,6 +53,10 @@ class PlayerManager:
         self.currentGame = None
 
 manager = PlayerManager()
+basicP1 = Player(1, 'Vobluda', 'Daisy', 'STA', 1)
+basicP2 = Player(2, 'Flux', 'Daisy', 'STA', 2)
+manager.currentGame = Game(1,2)
+manager.currentGame.players(basicP1, basicP2, 'Samus', 'Daisy', 5, 'Winner\'s Final')
 
 def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
@@ -137,9 +145,26 @@ def createSingleElimTournament(playerList):
 
 #def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
+@app.route('/')
+def default():
+    return redirect('/controlPanel')
+
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
+
+@app.route('/overlay', methods = ['GET'])
+def overlayPage():
+    print(manager.currentGame.player1)
+    return render_template('OverlayTemplate.html', game=manager.currentGame)
+
+@app.route('/controlPanel', methods = ['GET', 'POST'])
+def controlPanel():
+    return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+
+@app.route('/setup', methods = ['GET', 'POST'])
+def setup():
+    return render_template('SetupTemplate.html', playerList = manager.playerList)
 
 @app.route('/addPlayers', methods = ['GET', 'POST'])
 def playerPage():
@@ -152,10 +177,6 @@ def playerPage():
             player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
         manager.playerList.append(player)
         return render_template('AddPlayersTemplate.html', playerList = manager.playerList)
-
-@app.route('/overlay', methods = ['GET'])
-def overlayPage():
-    return render_template('OverlayTemplate.html', game=manager.currentGame)
 
 @app.route('/editPlayers', methods = ['GET', 'POST'])
 def editPlayerPage():
@@ -181,18 +202,18 @@ def finishSeeding():
     for player in manager.playerList:
         player.ID = i
         i = i + 1
-    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+    return redirect('/editPlayers')
 
 @app.route('/backupPlayers', methods = ['POST'])
 def createBackup():
     backup(manager.playerList, 'Backups/playerBackup')
-    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+    return redirect('/editPlayers')
 
 @app.route('/retrievePlayerBackups', methods = ['POST'])
 def retrieveBackup():
     readBackupPlayers('Backups/playerBackup')
     manager.ID = len(manager.playerList)+1
-    return render_template('EditPlayersTemplate.html', playerList = manager.playerList)
+    return redirect('/editPlayers')
 
 if __name__ == '__main__':
     app.run()
