@@ -174,9 +174,10 @@ def setup():
                 player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
             else:
                 player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            manager.ID = manager.ID + 1
             manager.playerList.append(player)
 
-        if request.form['formIdentifier'] == 'editForm':
+        elif request.form['formIdentifier'] == 'editForm':
             try:
                 tempList = manager.playerList
                 manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
@@ -189,17 +190,32 @@ def setup():
             except IndexError:
                 print("ID input is out of range")
 
-        if request.form['formIdentifier'] == 'finaliseForm':
+        elif request.form['formIdentifier'] == 'deleteForm':
+            index = 0
+            IDList = []
+            for player in manager.playerList:
+                IDList.append(player.ID)
+            print(IDList)
+            for ID in IDList:
+                if ID == int(request.form['ID']):
+                    delete = manager.playerList.pop(index)
+                    print(manager.playerList)
+                    pass
+                else:
+                    index = index + 1
+
+
+        elif request.form['formIdentifier'] == 'finaliseForm':
             manager.playerList = createSeeding(manager.playerList)
             i = 1
             for player in manager.playerList:
                 player.ID = i
                 i = i + 1
 
-        if request.form['formIdentifier'] == 'backupform':
+        elif request.form['formIdentifier'] == 'backupform':
             backup(manager.playerList, 'Backups/playerBackup')
 
-        if request.form['formIdentifier'] == 'retrieveBackupForm':
+        else:
             readBackupPlayers('Backups/playerBackup')
             manager.ID = len(manager.playerList)+1
 
