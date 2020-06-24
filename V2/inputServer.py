@@ -45,6 +45,7 @@ class Tournament:
     def __init__(self):
         self.rounds = []
         self.currentGame = None
+        self.type = None
 
 class PlayerManager:
     def __init__(self):

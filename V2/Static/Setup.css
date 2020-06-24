@@ -30,3 +30,18 @@ li a:hover {
 #active:hover{
   background-color: #8db4f2;
 }
+
+table {
+  border-collapse: collapse;
+  width: 50%
+}
+
+table, th, td {
+  border: 1px solid white;
+}
+
+th {
+  height: 50px;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
