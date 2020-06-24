@@ -107,17 +107,17 @@ def createSingleElimTemplate(playerNumber):
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     template = Tournament()  # create a tournament object
     for currentRound in range(0, roundNumber):  # loop over the round indices
-        Tournament.rounds.append([])
+        template.rounds.append([])
         if currentRound == 0:
-            Tournament.rounds[currentRound] = [Game(1, 2)]
+            template.rounds[currentRound] = [Game(1, 2)]
         else:
             for currentGame in range(int(2 ** currentRound)):
                 if currentGame % 2 == 0:
-                    seedindex1 = Tournament.rounds[currentRound - 1][currentGame // 2].seedindex1
+                    seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex1
                 else:
-                    seedindex1 = Tournament.rounds[currentRound - 1][currentGame // 2].seedindex2
+                    seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex2
                 seedindex2 = int(2 ** currentRound) + 1 - seedindex1
-                Tournament.rounds[currentRound].append(Game(seedindex1,seedindex2))
+                template.rounds[currentRound].append(Game(seedindex1,seedindex2))
     return Tournament
 
 
