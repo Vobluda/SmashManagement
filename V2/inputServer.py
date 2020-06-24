@@ -96,6 +96,34 @@ def createSingleElimTemplate(playerNumber):
     template.rounds = template.rounds[::-1]
     return template
 
+def createSingleElimTournament(playerList):
+    playerList = createSeeding(PlayerList)
+    if not areSeedsUnique(PlayerList):
+        raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible game number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    while len(playerList) < playerNumber:
+        playerList.append(Player(0,"Null","Null","Null",0))
+    playerList = createSeeding(playerList)
+    tournament = createSingleElimTemplate(playerNumber)
+    for current_seed in range(1,playerNumber+1):
+        player_with_seed = None
+        game_seed_index = None
+        seed_1_or_2 = None
+        for current_seed_b in range(1, playerNumber + 1):
+            if playerList[current_seed_b].seed == current_seed:
+                player_with_seed = playerList[current_seed_b]
+            if tournament.rounds[0][current_seed_b].seedindex1 == current_seed:
+                game_seed_index = current_seed_b
+                seed_1_or_2 = 1
+            if tournament.rounds[0][current_seed_b].seedindex2 == current_seed:
+                game_seed_index = current_seed_b
+                seed_1_or_2 = 2
+        if seed_1_or_2 == 1:
+            tournament.rounds[0][game_seed_index].player1 = player_with_seed
+        elif seed_1_or_2 == 2:
+            tournament.rounds[0][game_seed_index].player2 = player_with_seed
+    return tournament
 
 #def updateBracket(GameID, score1, score2):
 
