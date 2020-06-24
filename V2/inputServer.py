@@ -1,4 +1,4 @@
-from flask import Flask, url_for, send_from_directory, request, render_template
+from flask import Flask, url_for, send_from_directory, request, render_template, redirect
 import re
 import pickle
 import random  # for assigning seeds to random players
