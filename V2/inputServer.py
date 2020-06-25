@@ -45,13 +45,14 @@ class Tournament:
     def __init__(self):
         self.rounds = []
         self.currentGame = None
-        self.type = None
+        self.type = 'se' #NEEDS TO BE CHANGED WHEN DOUBLE ELIM IS IMPLMENTED
 
 class PlayerManager:
     def __init__(self):
         self.playerList = []
         self.ID = len(self.playerList)+1
         self.currentGame = None
+        self.tournament = None
 
 manager = PlayerManager()
 basicP1 = Player(1, 'Vobluda', 'Daisy', 'STA', 1)
@@ -113,8 +114,8 @@ def createSingleElimTemplate(playerNumber):
 
 def createSingleElimTournament(playerList):
     playerList = createSeeding(playerList)
-    if not areSeedsUnique(playerList):
-        raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+    #if not areSeedsUnique(playerList):
+    #    raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
     roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     while len(playerList) < playerNumber:
@@ -156,8 +157,13 @@ def getImage(path):
 
 @app.route('/overlay', methods = ['GET'])
 def overlayPage():
-    print(manager.currentGame.player1)
     return render_template('OverlayTemplate.html', game=manager.currentGame)
+
+@app.route('/bracket', methods = ['GET'])
+def bracketPage():
+    if manager.tournament.type == 'se':
+        print(manager.tournament.rounds)
+        return render_template('SingleElimTemplate.html', tournament=manager.tournament)
 
 @app.route('/controlPanel', methods = ['GET', 'POST'])
 def controlPanel():
@@ -206,18 +212,32 @@ def setup():
 
 
         elif request.form['formIdentifier'] == 'finaliseForm':
+            for player in manager.playerList:
+                player.seed = int(player.seed)
             manager.playerList = createSeeding(manager.playerList)
             i = 1
             for player in manager.playerList:
                 player.ID = i
                 i = i + 1
 
-        elif request.form['formIdentifier'] == 'backupform':
+        elif request.form['formIdentifier'] == 'backupForm':
             backup(manager.playerList, 'Backups/playerBackup')
 
-        else:
+        elif request.form['formIdentifier'] == 'retrieveBackupForm':
             readBackupPlayers('Backups/playerBackup')
             manager.ID = len(manager.playerList)+1
+
+        elif request.form['formIdentifier'] == 'makeBracketForm':
+            manager.playerList = createSeeding(manager.playerList)
+            i = 1
+            for player in manager.playerList:
+                player.ID = i
+                i = i + 1
+            manager.tournament = createSingleElimTournament(manager.playerList)
+
+        else:
+            print('This king of request is not valid: ' + request.form['formIdentifier'])
+            raise Exception
 
         return render_template('SetupTemplate.html', playerList = manager.playerList)
 
