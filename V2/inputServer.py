@@ -174,18 +174,13 @@ def updateBracket(GameID, score1, score2):
 def formatSingleElimTable(tournament):
     roundNumber = len(tournament.rounds)
     gameNumber = int(2 ** roundNumber) - 1
-    tableList = [[""*roundNumber]*gameNumber]
+    tableList = [[""]*roundNumber]*gameNumber
     prespace = 0
     midspace = 1
     for current_col in range(roundNumber):
         gameCounter = 0
         for current_row in range(gameNumber):
             if current_row == prespace + (gameCounter * (midspace + 1)):
-                print(current_row,current_col,current_col,gameCounter)
-                print(len(tableList),end=' ')
-                print(len(tableList[current_row]),end=' ')
-                print(len(tournament.rounds),end=' ')
-                print(len(tournament.rounds[current_col]))
                 tableList[current_row][current_col] = tournament.rounds[current_col][gameCounter]
                 gameCounter += 1
         prespace = (prespace * 2) + 1
