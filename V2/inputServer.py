@@ -213,7 +213,10 @@ def setup():
 
         elif request.form['formIdentifier'] == 'finaliseForm':
             for player in manager.playerList:
-                player.seed = int(player.seed)
+                try:
+                    player.seed = int(player.seed)
+                except:
+                    player.seed = 0
             manager.playerList = createSeeding(manager.playerList)
             i = 1
             for player in manager.playerList:
