@@ -181,7 +181,7 @@ def formatSingleElimTable(tournament):
         gameCounter = 0
         for current_row in range(gameNumber):
             if current_row == prespace + (gameCounter * (midspace + 1)):
-                print(current_row,current_col,current_col,game_counter)
+                print(current_row,current_col,current_col,gameCounter)
                 print(len(tableList),end=' ')
                 print(len(tableList[current_row]),end=' ')
                 print(len(tournament.rounds),end=' ')
