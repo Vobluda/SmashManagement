@@ -22,7 +22,7 @@ class Player:
 
 
 class Game:
-    def __init__(self, seedindex1, seedindex2):  # initialize an "empty" game without players
+    def __init__(self, id, seedindex1, seedindex2):  # initialize an "empty" game without players
         self.seedindex1 = seedindex1  # seed *index*, not the actual seed
         self.seedindex2 = seedindex2
         self.player1 = None
@@ -108,10 +108,12 @@ def createSingleElimTemplate(playerNumber):
     roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     template = Tournament()  # create a tournament object
+    gameCounter = int(2 ** (roundNumber + 1)) - 1
     for currentRound in range(0, roundNumber):  # loop over the round indices
         template.rounds.append([])
         if currentRound == 0:
-            template.rounds[currentRound] = [Game(1, 2)]
+            template.rounds[currentRound] = [Game(gameCounter, 1, 2)]
+            gameCounter -= 1
         else:
             for currentGame in range(int(2 ** currentRound)):
                 if currentGame % 2 == 0:
@@ -119,7 +121,8 @@ def createSingleElimTemplate(playerNumber):
                 else:
                     seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex2
                 seedindex2 = int(2 ** (currentRound + 1)) + 1 - seedindex1
-                template.rounds[currentRound].append(Game(seedindex1, seedindex2))
+                template.rounds[currentRound].append(Game(gameCounter, seedindex1, seedindex2))
+                gameCounter -= 1
     template.rounds = template.rounds[::-1]
     return template
 
