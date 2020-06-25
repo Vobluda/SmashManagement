@@ -6,8 +6,8 @@
   </head>
 
   <table>
-    {% for round in tournament %}
-      <th>Round {{loop.index+1}}</th>
+    {% for round in tournament.rounds %}
+      <th>Round {{loop.index}}</th>
     {% endfor %}
   </table>
   <!--{% for round in tournament.rounds %}
