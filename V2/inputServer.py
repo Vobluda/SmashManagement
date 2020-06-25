@@ -128,7 +128,7 @@ def createSingleElimTournament(playerList):
     roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     while len(playerList) < playerNumber:
-        playerList.append(Player(len(playerList) + 1, "Null", "Null", "Null", 0))
+        playerList.append(Player(len(playerList) + 1, "Nic", "Nic", "Nic", 0))
     playerList = createSeeding(playerList)
     tournament = createSingleElimTemplate(playerNumber)
     for current_seed in range(1, playerNumber + 1):
