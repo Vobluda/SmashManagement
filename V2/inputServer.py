@@ -62,8 +62,6 @@ class PlayerManager:
 manager = PlayerManager()
 basicP1 = Player(1, 'Vobluda', 'Daisy', 'STA', 1)
 basicP2 = Player(2, 'Flux', 'Daisy', 'STA', 2)
-manager.currentGame = Game(1,2)
-manager.currentGame.players(basicP1, basicP2, 'Samus', 'Daisy', 5, 'Winner\'s Final')
 
 def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
