@@ -23,6 +23,7 @@ class Player:
 
 class Game:
     def __init__(self, id, seedindex1, seedindex2):  # initialize an "empty" game without players
+        self.ID = id
         self.seedindex1 = seedindex1  # seed *index*, not the actual seed
         self.seedindex2 = seedindex2
         self.player1 = None
@@ -39,8 +40,6 @@ class Game:
         self.player2 = player2
         self.player1Char = player1Char
         self.player2Char = player2Char
-        self.winner = None
-        self.score = [0,0]
         self.BO = BO
         self.name = name
 
