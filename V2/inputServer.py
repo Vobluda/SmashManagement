@@ -113,8 +113,8 @@ def createSingleElimTemplate(playerNumber):
 
 def createSingleElimTournament(playerList):
     playerList = createSeeding(playerList)
-    if not areSeedsUnique(playerList):
-        raise Exception('An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
+    # if not areSeedsUnique(playerList):
+    #    raise Exception('An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
     roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     while len(playerList) < playerNumber:
