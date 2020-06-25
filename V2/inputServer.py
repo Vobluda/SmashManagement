@@ -124,6 +124,8 @@ def createSingleElimTemplate(playerNumber):
 
 
 def createSingleElimTournament(playerList):
+    print("Standard print")
+    print("Standard debug",out=sys.stderr)
     playerList = createSeeding(playerList)
     roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
