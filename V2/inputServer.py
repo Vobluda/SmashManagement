@@ -180,7 +180,7 @@ def overlayPage():
 def bracketPage():
     if manager.tournament.type == 'se':
         print(manager.tournament.rounds)
-        return render_template('SingleElimTemplate.html', tournament=manager.tournament)
+        return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds = len(manager.tournament.rounds))
 
 @app.route('/controlPanel', methods = ['GET', 'POST'])
 def controlPanel():
