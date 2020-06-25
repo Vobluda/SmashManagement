@@ -1,0 +1,20 @@
+<html>
+
+  <head>
+    <link rel="stylesheet" href="Setup.css">
+    <link rel='shortcut icon' type='image/x-icon' href='Logo.ico'>
+  </head>
+
+  {% for round in tournament.rounds %}
+  {% for game in round %}
+  <div>
+    <table>
+      <tr><td>{{game.player1.IGN}}</td><td>{{game.player1.score}}</td></tr>
+      <tr><td>{{game.player2.IGN}}</td><td>{{game.player2.score}}</td></tr>
+    </table>
+  </div>
+  {% endfor %}
+  {% endfor %}
+
+
+</html>

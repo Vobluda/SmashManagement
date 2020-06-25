@@ -1,4 +1,4 @@
-from flask import Flask, url_for, send_from_directory, request, render_template
+from flask import Flask, url_for, send_from_directory, request, render_template, redirect
 import re
 import pickle
 import random  # for assigning seeds to random players
@@ -26,14 +26,18 @@ class Game:
         self.seedindex2 = seedindex2
         self.player1 = None
         self.player2 = None
+        self.player1Char = None
+        self.player2Char = None
         self.winner = None
         self.score = [0,0]
         self.BO = None
         self.name = None
 
-    def players(self, player1, player2, BO, name):
+    def players(self, player1, player2, player1Char, player2Char, BO, name):
         self.player1 = player1
         self.player2 = player2
+        self.player1Char = player1Char
+        self.player2Char = player2Char
         self.winner = None
         self.score = [0,0]
         self.BO = BO
@@ -44,6 +48,7 @@ class Tournament:
     def __init__(self):
         self.rounds = []
         self.currentGame = None
+        self.type = 'se' #NEEDS TO BE CHANGED WHEN DOUBLE ELIM IS IMPLMENTED
 
 
 class PlayerManager:
@@ -51,7 +56,14 @@ class PlayerManager:
         self.playerList = []
         self.ID = len(self.playerList) + 1
         self.currentGame = None
+        self.tournament = None
 
+        
+manager = PlayerManager()
+basicP1 = Player(1, 'Vobluda', 'Daisy', 'STA', 1)
+basicP2 = Player(2, 'Flux', 'Daisy', 'STA', 2)
+manager.currentGame = Game(1,2)
+manager.currentGame.players(basicP1, basicP2, 'Samus', 'Daisy', 5, 'Winner\'s Final')
 
 def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
@@ -113,8 +125,6 @@ def createSingleElimTemplate(playerNumber):
 
 def createSingleElimTournament(playerList):
     playerList = createSeeding(playerList)
-    # if not areSeedsUnique(playerList):
-    #    raise Exception('An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
     roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     while len(playerList) < playerNumber:
@@ -151,69 +161,102 @@ def createSingleElimTournament(playerList):
 manager = PlayerManager()
 
 
+@app.route('/')
+def default():
+    return redirect('/controlPanel')
+
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
 
-
-@app.route('/addPlayers', methods=['GET', 'POST'])
-def playerPage():
-    if request.method == 'GET':
-        return render_template('AddPlayersTemplate.html', playerList=manager.playerList)
-    if request.method == 'POST':
-        if request.form['seed'] == '':
-            player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
-        else:
-            player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-        manager.playerList.append(player)
-        return render_template('AddPlayersTemplate.html', playerList=manager.playerList)
-
-
-@app.route('/overlay', methods=['GET'])
+@app.route('/overlay', methods = ['GET'])
 def overlayPage():
     return render_template('OverlayTemplate.html', game=manager.currentGame)
 
+@app.route('/bracket', methods = ['GET'])
+def bracketPage():
+    if manager.tournament.type == 'se':
+        print(manager.tournament.rounds)
+        return render_template('SingleElimTemplate.html', tournament=manager.tournament)
 
-@app.route('/editPlayers', methods=['GET', 'POST'])
-def editPlayerPage():
+@app.route('/controlPanel', methods = ['GET', 'POST'])
+def controlPanel():
+    return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+
+@app.route('/setup', methods = ['GET', 'POST'])
+def setup():
     if request.method == 'GET':
-        return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+        return render_template('SetupTemplate.html', playerList = manager.playerList)
     if request.method == 'POST':
-        try:
-            tempList = manager.playerList
-            manager.playerList[int(request.form['ID']) - 1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-            if areSeedsUnique(manager.playerList) == True:
-                print('Seeding finalised succesfully')
+
+        if request.form['formIdentifier'] == 'addForm':
+            if request.form['seed'] == '':
+                player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
             else:
-                raise Exception('An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
-                manager.playerList = tempList
-        except IndexError:
-            print("ID input is out of range")
-        return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+                player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+            manager.ID = manager.ID + 1
+            manager.playerList.append(player)
+
+        elif request.form['formIdentifier'] == 'editForm':
+            try:
+                tempList = manager.playerList
+                manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+                print(request.json)
+                if areSeedsUnique(manager.playerList) == True:
+                    print('Seeding finalised succesfully')
+                else:
+                    raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                    manager.playerList = tempList
+            except IndexError:
+                print("ID input is out of range")
+
+        elif request.form['formIdentifier'] == 'deleteForm':
+            index = 0
+            IDList = []
+            for player in manager.playerList:
+                IDList.append(player.ID)
+            print(IDList)
+            for ID in IDList:
+                if ID == int(request.form['ID']):
+                    delete = manager.playerList.pop(index)
+                    print(manager.playerList)
+                    pass
+                else:
+                    index = index + 1
 
 
-@app.route('/finalisePlayers', methods=['POST'])
-def finishSeeding():
-    manager.playerList = createSeeding(manager.playerList)
-    i = 1
-    for player in manager.playerList:
-        player.ID = i
-        i = i + 1
-    return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+        elif request.form['formIdentifier'] == 'finaliseForm':
+            for player in manager.playerList:
+                try:
+                    player.seed = int(player.seed)
+                except:
+                    player.seed = 0
+            manager.playerList = createSeeding(manager.playerList)
+            i = 1
+            for player in manager.playerList:
+                player.ID = i
+                i = i + 1
 
+        elif request.form['formIdentifier'] == 'backupForm':
+            backup(manager.playerList, 'Backups/playerBackup')
 
-@app.route('/backupPlayers', methods=['POST'])
-def createBackup():
-    backup(manager.playerList, 'Backups/playerBackup')
-    return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+        elif request.form['formIdentifier'] == 'retrieveBackupForm':
+            readBackupPlayers('Backups/playerBackup')
+            manager.ID = len(manager.playerList)+1
 
+        elif request.form['formIdentifier'] == 'makeBracketForm':
+            manager.playerList = createSeeding(manager.playerList)
+            i = 1
+            for player in manager.playerList:
+                player.ID = i
+                i = i + 1
+            manager.tournament = createSingleElimTournament(manager.playerList)
 
-@app.route('/retrievePlayerBackups', methods=['POST'])
-def retrieveBackup():
-    readBackupPlayers('Backups/playerBackup')
-    manager.ID = len(manager.playerList) + 1
-    return render_template('EditPlayersTemplate.html', playerList=manager.playerList)
+        else:
+            print('This king of request is not valid: ' + request.form['formIdentifier'])
+            raise Exception
 
+        return render_template('SetupTemplate.html', playerList = manager.playerList)
 
 if __name__ == '__main__':
     app.run()

@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link rel='shortcut icon' type='image/x-icon' href='Logo.ico'>
     <link rel="stylesheet" href="AtomTesting.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
@@ -13,8 +14,8 @@
       <p id="leftNum">{{ game.player1.score }}</p>
       <p id="rightNum">{{ game.player2.score }}</p>
       <p id="status">{{ game.name }}</p>
-      <img src="{{ player1.character }}.png" class="leftIcon">
-      <img src="{{ player2.character }}.png" id="rightIcon" height="30" width="30" class="rightIcon">
+      <img src="{{ game.player1Char }}.png" class="leftIcon">
+      <img src="{{ game.player2Char }}.png" id="rightIcon" height="30" width="30" class="rightIcon">
     </div>
   </body>
 </html>
