@@ -203,8 +203,10 @@ def setup():
         elif request.form['formIdentifier'] == 'editForm':
             try:
                 tempList = manager.playerList
-                manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
-                print(request.json)
+                if request.form['seed'] == '':
+                    manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], '')
+                else:
+                    manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
                 if areSeedsUnique(manager.playerList) == True:
                     print('Seeding finalised succesfully')
                 else:
