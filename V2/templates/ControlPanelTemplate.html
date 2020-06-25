@@ -9,6 +9,15 @@
     <li><a href="{{ url_for('setup') }}">Setup</a></li>
   </ul>
 
+  <form action="/controlPanel" method="post" id="backupTournamentForm" class='formSubmits'>
+    <input type='text' name='formIdentifier' value='backupTournamentForm' id='hidden'></input>
+    <input type="submit" value="Backup Tournament" id='buttons'>
+  </form>
+
+  <form action="/controlPanel" method="post" id="retrieveBackupTournamentForm" class='formSubmits'>
+    <input type='text' name='formIdentifier' value='retrieveBackupTournamentForm' id='hidden'></input>
+    <input type="submit" value="Retrieve Backup of Tournament" id='buttons'>
+  </form>
 
 
 
