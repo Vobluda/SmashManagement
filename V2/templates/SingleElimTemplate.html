@@ -5,7 +5,12 @@
     <link rel='shortcut icon' type='image/x-icon' href='Logo.ico'>
   </head>
 
-  {% for round in tournament.rounds %}
+  <table>
+    {% for round in tournament %}
+      <th>Round {{loop.index+1}}</th>
+    {% endfor %}
+  </table>
+  <!--{% for round in tournament.rounds %}
     <div id="round{{loop.index}}">
       {% for game in round %}
         <div id="game{{ game.ID }}">
@@ -65,6 +70,6 @@
         </style>
       {% endif %}
     {% endfor %}
-  {% endfor %}
+  {% endfor %}-->
 
 </html>
