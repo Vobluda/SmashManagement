@@ -129,6 +129,7 @@ def createSingleElimTournament(playerList):
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     while len(playerList) < playerNumber:
         playerList.append(Player(len(playerList) + 1, "Nic", "Nic", "Nic", 0))
+        print("Null plater with id",len(playerList),"and name Nic was added.")
     playerList = createSeeding(playerList)
     tournament = createSingleElimTemplate(playerNumber)
     for current_seed in range(1, playerNumber + 1):
