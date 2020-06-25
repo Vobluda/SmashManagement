@@ -35,6 +35,7 @@
       }
     </style>
     {% set ns = namespace(numOfGames=0) %}
+    {% set ns = namespace(gameCounter=1) %}
     {% for game in round %}
       {% set ns.numOfGames = loop.index %}
     {% endfor %}
@@ -42,12 +43,25 @@
       {%if outer_loop.index % 2 == 1 %}
         <style>
           {% set topPadding = (100/ns.numOfGames)*loop.index - (100/ns.numOfGames) %}
-          #game{{loop.index}}{
+          #game{{ns.gameCounter}}{
             position: fixed;
             height: 50px;
             width: 50px;
             padding-top: {{topPadding}}%;
           }
+          {% set ns.gameCounter = ns.gameCounter + 1 %}
+        </style>
+      {% endif %}
+      {%if outer_loop.index % 2 == 0 %}
+        <style>
+          {% set topPadding = (100/ns.numOfGames)*loop.index - (100/ns.numOfGames) + ((100/ns.numOfGames)*loop.index)/2 %}
+          #game{{ns.gameCounter}}{
+            position: fixed;
+            height: 50px;
+            width: 50px;
+            padding-top: {{topPadding}}%;
+          }
+          {% set ns.gameCounter = ns.gameCounter + 1 %}
         </style>
       {% endif %}
     {% endfor %}
