@@ -102,7 +102,7 @@ def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
 
 
 def createSingleElimTemplate(playerNumber):
-    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible game number
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible round number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     template = Tournament()  # create a tournament object
     for currentRound in range(0, roundNumber):  # loop over the round indices
@@ -152,6 +152,23 @@ def createSingleElimTournament(playerList):
         elif seed_1_or_2 == 2:
             tournament.rounds[0][game_seed_index].player2 = player_with_seed
     return tournament
+
+
+def formatSingleElimTable(tournament):
+    roundNumber = len(tournament.rounds)
+    gameNumber = int(2 ** roundNumber) - 1
+    tableList = [[""*roundNumber]*gameNumber]
+    prespace = 0
+    midspace = 1
+    for current_col in range(roundNumber):
+        gameCounter = 0
+        for current_row in range(gameNumber):
+            if current_row == prespace + (gameCounter * (midspace + 1)):
+                tableList[current_row][current_col] = tournament.rounds[current_col][gameCounter]
+                gameCounter += 1
+        prespace = (prespace * 2) + 1
+        midspace = (midspace * 2) + 1
+    return tableList
 
 
 # def updateBracket(GameID, score1, score2):
