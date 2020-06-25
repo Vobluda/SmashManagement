@@ -32,7 +32,7 @@ class Game:
         self.player2Char = None
         self.winner = None
         self.score = [0,0]
-        self.BO = None
+        self.BO = 5
         self.name = None
 
     def players(self, player1, player2, player1Char, player2Char, BO, name):
@@ -66,12 +66,17 @@ basicP2 = Player(2, 'Flux', 'Daisy', 'STA', 2)
 def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
-
+        print('Backup succesful')
 
 def readBackupPlayers(objectFile):
     with open(objectFile, 'rb') as openedFile:
         manager.playerList = pickle.load(openedFile)
     print('Backup of players retrieved')
+
+def readBackupTournament(objectFile):
+    with open(objectFile, 'rb') as openedFile:
+        manager.tournament = pickle.load(openedFile)
+    print('Backup of tournament retrieved')
 
 
 def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
@@ -152,7 +157,19 @@ def createSingleElimTournament(playerList):
         elif seed_1_or_2 == 2:
             tournament.rounds[0][game_seed_index].player2 = player_with_seed
     return tournament
+def updateBracket(GameID, score1, score2):
+    #update Game score for GameID
+    for round in manager.tournament:
+        for game in round:
+            if game.score[0] > int(game.BO/2):
+                game.winner = game.player1
+            elif game.score[1] > int(game.BO/2):
+                game.winner = game.player2
+            else:
+                pass
+    #move winners onto next games
 
+#def selectCurrentGame(GameID): #moves that game object into manager.currentGame
 
 def formatSingleElimTable(tournament):
     roundNumber = len(tournament.rounds)
@@ -201,12 +218,23 @@ def overlayPage():
 @app.route('/bracket', methods = ['GET'])
 def bracketPage():
     if manager.tournament.type == 'se':
-        print(manager.tournament.rounds)
         return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds = len(manager.tournament.rounds))
 
 @app.route('/controlPanel', methods = ['GET', 'POST'])
 def controlPanel():
-    return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+    if request.method == 'GET':
+        return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+    if request.method == 'POST':
+
+        if request.form['formIdentifier'] == 'backupTournamentForm':
+            backup(manager.tournament, 'Backups/tournamentBackup')
+
+        if request.form['formIdentifier'] == 'retrieveBackupTournamentForm':
+            readBackupTournament('Backups/tournamentBackup')
+
+
+        return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+
 
 @app.route('/setup', methods = ['GET', 'POST'])
 def setup():
