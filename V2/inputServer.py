@@ -27,7 +27,7 @@ class Game:
         self.player1 = None
         self.player2 = None
         self.winner = None
-        self.score = []
+        self.score = [0,0]
         self.BO = None
         self.name = None
 
@@ -35,7 +35,7 @@ class Game:
         self.player1 = player1
         self.player2 = player2
         self.winner = None
-        self.score = []
+        self.score = [0,0]
         self.BO = BO
         self.name = name
 
@@ -118,11 +118,11 @@ def createSingleElimTournament(playerList):
     roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     while len(playerList) < playerNumber:
-        playerList.append(Player(0, "Null", "Null", "Null", 0))
+        playerList.append(Player(len(playerList) + 1, "Null", "Null", "Null", 0))
     playerList = createSeeding(playerList)
     tournament = createSingleElimTemplate(playerNumber)
     for current_seed in range(1, playerNumber + 1):
-        player_with_seed = None
+        player_with_seed = None1
         game_seed_index = None
         seed_1_or_2 = None
         for current_seed_b in range(playerNumber):
