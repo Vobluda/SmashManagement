@@ -6,14 +6,16 @@
   </head>
 
   {% for round in tournament.rounds %}
-  {% for game in round %}
-  <div>
-    <table>
-      <tr><td>{{game.player1.IGN}}</td><td>{{game.score[0]}}</td></tr>
-      <tr><td>{{game.player2.IGN}}</td><td>{{game.score[1]}}</td></tr>
-    </table>
-  </div>
-  {% endfor %}
+    <div id="round{{loop.index}}">
+      {% for game in round %}
+        <div>
+          <table id"game{{ loop.index }}">
+            <tr><td>{{game.ID}}</td><td>{{game.player1.IGN}}</td><td>{{game.score[0]}}</td></tr>
+            <tr><td></td><td>{{game.player2.IGN}}</td><td>{{game.score[1]}}</td></tr>
+          </table>
+        </div>
+      {% endfor %}
+    </div>
   {% endfor %}
 
 
