@@ -58,7 +58,7 @@ class PlayerManager:
         self.currentGame = None
         self.tournament = None
 
-        
+
 manager = PlayerManager()
 basicP1 = Player(1, 'Vobluda', 'Daisy', 'STA', 1)
 basicP2 = Player(2, 'Flux', 'Daisy', 'STA', 2)
@@ -132,7 +132,7 @@ def createSingleElimTournament(playerList):
     playerList = createSeeding(playerList)
     tournament = createSingleElimTemplate(playerNumber)
     for current_seed in range(1, playerNumber + 1):
-        player_with_seed = None1
+        player_with_seed = None
         game_seed_index = None
         seed_1_or_2 = None
         for current_seed_b in range(playerNumber):
