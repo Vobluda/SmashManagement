@@ -6,10 +6,35 @@
   </head>
 
   <table>
+    <!-- creates header of rounds -->
     {% for round in tournament.rounds %}
       <th>Round {{loop.index}}</th>
     {% endfor %}
+
+    {% for row in tournamentTable %}
+      <tr>
+        {% for item in row %}
+            <td>
+              <table>
+                <colgroup>
+                  <col class="GameID">
+                  <col class="IGN">
+                  <col class="Score">
+                </colgroup>
+                <tr><td>{{item.ID}}</td><td>{{item.player1.IGN}}</td><td>{{item.score[0]}}</td></tr>
+                <tr><td></td><td>{{item.player2.IGN}}</td><td>{{item.score[1]}}</td></tr>
+              </table>
+            </td>
+
+        {% endfor %}
+      </tr>
+    {% endfor %}
   </table>
+
+
+
+
+
   <!--{% for round in tournament.rounds %}
     <div id="round{{loop.index}}">
       {% for game in round %}

@@ -92,3 +92,12 @@ li form {
 #buttons:active{
   background-color: #8db4f2;
 }
+
+#bracket{
+     position: absolute;
+     bottom: 0;
+     right: 0;
+     max-width: 50%;
+     max-height: 30%;
+     border-width: 0px;
+}

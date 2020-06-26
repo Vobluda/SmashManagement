@@ -157,19 +157,6 @@ def createSingleElimTournament(playerList):
         elif seed_1_or_2 == 2:
             tournament.rounds[0][game_seed_index].player2 = player_with_seed
     return tournament
-def updateBracket(GameID, score1, score2):
-    #update Game score for GameID
-    for round in manager.tournament:
-        for game in round:
-            if game.score[0] > int(game.BO/2):
-                game.winner = game.player1
-            elif game.score[1] > int(game.BO/2):
-                game.winner = game.player2
-            else:
-                pass
-    #move winners onto next games
-
-#def selectCurrentGame(GameID): #moves that game object into manager.currentGame
 
 def formatSingleElimTable(tournament):
     roundNumber = len(tournament.rounds)
@@ -187,8 +174,36 @@ def formatSingleElimTable(tournament):
         midspace = (midspace * 2) + 1
     return tableList
 
+def updateBracket(GameID, score1, score2):
+    #update Game score for GameID
+    for round in manager.tournament.rounds:
+        roundCounter = 0
+        for game in round:
+            if game.score[0] > int(game.BO/2):
+                game.winner = game.player1
+            elif game.score[1] > int(game.BO/2):
+                game.winner = game.player2
+            else:
+                pass
+    #move winners onto next games
+            if game.winner != None:
+                if round.index(game) % 2 == 0:
+                    manager.tournament.rounds[roundCounter+1][int(round.index(game)/2)].player1 = game.winner
+                if round.index(game) % 2 == 1:
+                    manager.tournament.rounds[roundCounter+1][int(round.index(game)/2)].player2 = game.winner
 
-# def updateBracket(GameID, score1, score2):
+        roundCounter = roundCounter + 1
+
+def selectCurrentGame(GameID): #moves that game object into manager.currentGame
+    foundGame = False
+    for round in manager.tournament.rounds:
+        for game in round:
+            if game.ID == GameID:
+                manager.currentGame = game
+                foundGame = True
+                break
+    if foundGame == False:
+        print('Failed to find game')
 
 # def updateOverlayVals(GameID):
 
@@ -196,7 +211,6 @@ def formatSingleElimTable(tournament):
 
 
 manager = PlayerManager()
-
 
 @app.route('/')
 def default():
@@ -212,14 +226,34 @@ def overlayPage():
 
 @app.route('/bracket', methods = ['GET'])
 def bracketPage():
-    if manager.tournament.type == 'se':
-        return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds = len(manager.tournament.rounds), tournamentTable = formatSingleElimTable(manager.tournament))
+    try:
+        if manager.tournament.type == 'se':
+            table = formatSingleElimTable(manager.tournament)
+            print(table)
+            for list in table:
+                print(list[0].player1.IGN)
+            return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds = len(manager.tournament.rounds), tournamentTable = formatSingleElimTable(manager.tournament))
+    except:
+        return render_template('Empty.html')
 
 @app.route('/controlPanel', methods = ['GET', 'POST'])
 def controlPanel():
     if request.method == 'GET':
-        return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+        return render_template('ControlPanelTemplate.html', currentGame = manager.currentGame)
     if request.method == 'POST':
+
+        if request.form['formIdentifier'] == 'changeGame':
+            try:
+                selectCurrentGame(int(request.form['gameID']))
+            except:
+                print('Error occured while trying to select game')
+
+        if request.form['formIdentifier'] == 'changeScore':
+            manager.currentGame.score[0] = int(request.form['p1Score'])
+            manager.currentGame.score[1] = int(request.form['p2Score'])
+            updateBracket(manager.currentGame.ID, int(request.form['p1Score']), int(request.form['p2Score']))
+
+
 
         if request.form['formIdentifier'] == 'backupTournamentForm':
             backup(manager.tournament, 'Backups/tournamentBackup')
@@ -228,7 +262,7 @@ def controlPanel():
             readBackupTournament('Backups/tournamentBackup')
 
 
-        return render_template('ControlPanelTemplate.html', playerList = manager.playerList)
+        return render_template('ControlPanelTemplate.html', currentGame = manager.currentGame)
 
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -301,6 +335,15 @@ def setup():
                 player.ID = i
                 i = i + 1
             manager.tournament = createSingleElimTournament(manager.playerList)
+            roundCounter = 1
+            for round in manager.tournament.rounds:
+                print("Round " + str(roundCounter))
+                for game in round:
+                    try:
+                        print(game.player1.IGN + " vs " + game.player2.IGN)
+                    except:
+                        print("None vs None")
+                roundCounter = roundCounter + 1
 
         else:
             print('This king of request is not valid: ' + request.form['formIdentifier'])

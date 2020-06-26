@@ -9,16 +9,232 @@
     <li><a href="{{ url_for('setup') }}">Setup</a></li>
   </ul>
 
-  <form action="/controlPanel" method="post" id="backupTournamentForm" class='formSubmits'>
-    <input type='text' name='formIdentifier' value='backupTournamentForm' id='hidden'></input>
-    <input type="submit" value="Backup Tournament" id='buttons'>
-  </form>
+  <div style="padding-top: 60px;"></div>
 
-  <form action="/controlPanel" method="post" id="retrieveBackupTournamentForm" class='formSubmits'>
-    <input type='text' name='formIdentifier' value='retrieveBackupTournamentForm' id='hidden'></input>
-    <input type="submit" value="Retrieve Backup of Tournament" id='buttons'>
-  </form>
+  <div>
+    <form action="/controlPanel" method="post" id="form">
 
+      <select id='Action' name='formIdentifier' form='form'>
+        <option value='changeGame'>Change Game</option>
+        <option value='changeScore'>Change Score</option>
+        <option value='changeCharacter'>Change character</option>
+        <option value='changeScoreCharacter'>Change score & character</option>
+      </select><br>
+
+      <label>ID of current Game</label><br>
+      <input type="number" name="gameID"></input><br>
+
+      {% if currentGame != None %}
+        <label>Player 1 score</label><br>
+        <input type="number" name="p1Score" value="{{currentGame.score[0]}}"></input><br>
+
+        <label>Player 2 score</label><br>
+        <input type="number" name="p2Score" value="{{currentGame.score[1]}}"></input><br>
+      {%else%}
+        <label>Player 1 score</label><br>
+        <input type="number" name="p1Score"></input><br>
+
+        <label>Player 2 score</label><br>
+        <input type="number" name="p2Score"></input><br>
+      {%endif%}
+
+      <label for="p1Char">Player 1 Character</label><br>
+      <select id="main" name="p1Char" form="form">
+        <option value="Banjo&Kazooie">Banjo&Kazooie</option>
+        <option value="Bayonetta">Bayonetta</option>
+        <option value="Bowser">Bowser</option>
+        <option value="BowserJr">BowserJr</option>
+        <option value="Byleth">Byleth</option>
+        <option value="CaptainFalcon">CaptainFalcon</option>
+        <option value="Chrom">Chrom</option>
+        <option value="Corrin">Corrin</option>
+        <option value="Daisy">Daisy</option>
+        <option value="DarkPit">DarkPit</option>
+        <option value="DarkSamus">DarkSamus</option>
+        <option value="DiddyKong">DiddyKong</option>
+        <option value="DonkeyKong">DonkeyKong</option>
+        <option value="DrMario">DrMario</option>
+        <option value="DuckHunt">DuckHunt</option>
+        <option value="Falco">Falco</option>
+        <option value="Fox">Fox</option>
+        <option value="Ganondorf">Ganondorf</option>
+        <option value="Greninja">Greninja</option>
+        <option value="Hero">Hero</option>
+        <option value="IceClimbers">IceClimbers</option>
+        <option value="Ike">Ike</option>
+        <option value="Incineroar">Incineroar</option>
+        <option value="Inkling">Inkling</option>
+        <option value="Isabelle">Isabelle</option>
+        <option value="Jigglypuff">Jigglypuff</option>
+        <option value="Joker">Joker</option>
+        <option value="Ken">Ken</option>
+        <option value="KingDedede">KingDedede</option>
+        <option value="KingKRool">KingKRool</option>
+        <option value="Kirby">Kirby</option>
+        <option value="Link">Link</option>
+        <option value="LittleMac">LittleMac</option>
+        <option value="Lucario">Lucario</option>
+        <option value="Lucas">Lucas</option>
+        <option value="Lucina">Lucina</option>
+        <option value="Luigi">Luigi</option>
+        <option value="Mario">Mario</option>
+        <option value="Marth">Marth</option>
+        <option value="MegaMan">MegaMan</option>
+        <option value="MetaKnight">MetaKnight</option>
+        <option value="Mewtwo">Mewtwo</option>
+        <option value="Mii">Mii</option>
+        <option value="MrGame&Watch">MrGame&Watch</option>
+        <option value="Ness">Ness</option>
+        <option value="Olimar">Olimar</option>
+        <option value="Pac-Man">Pac-Man</option>
+        <option value="Palutena">Palutena</option>
+        <option value="Peach">Peach</option>
+        <option value="Pichu">Pichu</option>
+        <option value="Pikachu">Pikachu</option>
+        <option value="Piranha">Piranha</option>
+        <option value="Pit">Pit</option>
+        <option value="PokémonTrainer">PokémonTrainer</option>
+        <option value="Richter">Richter</option>
+        <option value="Ridley">Ridley</option>
+        <option value="ROB">ROB</option>
+        <option value="Robin">Robin</option>
+        <option value="Rosalina">Rosalina</option>
+        <option value="Roy">Roy</option>
+        <option value="Ryu">Ryu</option>
+        <option value="Samus">Samus</option>
+        <option value="Sheik">Sheik</option>
+        <option value="Shulk">Shulk</option>
+        <option value="Simon">Simon</option>
+        <option value="Snake">Snake</option>
+        <option value="Sonic">Sonic</option>
+        <option value="Terry">Terry</option>
+        <option value="ToonLink">ToonLink</option>
+        <option value="Villager">Villager</option>
+        <option value="Wario">Wario</option>
+        <option value="WiiFitTrainer">WiiFitTrainer</option>
+        <option value="Wolf">Wolf</option>
+        <option value="Yoshi">Yoshi</option>
+        <option value="YoungLink">YoungLink</option>
+        <option value="Zelda">Zelda</option>
+        <option value="ZeroSuitSamus">ZeroSuitSamus</option>
+      </select><br>
+
+      <label for="p2Char">Player 2 Character</label><br>
+      <select id="main" name="p2Char" form="form">
+        <option value="Banjo&Kazooie">Banjo&Kazooie</option>
+        <option value="Bayonetta">Bayonetta</option>
+        <option value="Bowser">Bowser</option>
+        <option value="BowserJr">BowserJr</option>
+        <option value="Byleth">Byleth</option>
+        <option value="CaptainFalcon">CaptainFalcon</option>
+        <option value="Chrom">Chrom</option>
+        <option value="Corrin">Corrin</option>
+        <option value="Daisy">Daisy</option>
+        <option value="DarkPit">DarkPit</option>
+        <option value="DarkSamus">DarkSamus</option>
+        <option value="DiddyKong">DiddyKong</option>
+        <option value="DonkeyKong">DonkeyKong</option>
+        <option value="DrMario">DrMario</option>
+        <option value="DuckHunt">DuckHunt</option>
+        <option value="Falco">Falco</option>
+        <option value="Fox">Fox</option>
+        <option value="Ganondorf">Ganondorf</option>
+        <option value="Greninja">Greninja</option>
+        <option value="Hero">Hero</option>
+        <option value="IceClimbers">IceClimbers</option>
+        <option value="Ike">Ike</option>
+        <option value="Incineroar">Incineroar</option>
+        <option value="Inkling">Inkling</option>
+        <option value="Isabelle">Isabelle</option>
+        <option value="Jigglypuff">Jigglypuff</option>
+        <option value="Joker">Joker</option>
+        <option value="Ken">Ken</option>
+        <option value="KingDedede">KingDedede</option>
+        <option value="KingKRool">KingKRool</option>
+        <option value="Kirby">Kirby</option>
+        <option value="Link">Link</option>
+        <option value="LittleMac">LittleMac</option>
+        <option value="Lucario">Lucario</option>
+        <option value="Lucas">Lucas</option>
+        <option value="Lucina">Lucina</option>
+        <option value="Luigi">Luigi</option>
+        <option value="Mario">Mario</option>
+        <option value="Marth">Marth</option>
+        <option value="MegaMan">MegaMan</option>
+        <option value="MetaKnight">MetaKnight</option>
+        <option value="Mewtwo">Mewtwo</option>
+        <option value="Mii">Mii</option>
+        <option value="MrGame&Watch">MrGame&Watch</option>
+        <option value="Ness">Ness</option>
+        <option value="Olimar">Olimar</option>
+        <option value="Pac-Man">Pac-Man</option>
+        <option value="Palutena">Palutena</option>
+        <option value="Peach">Peach</option>
+        <option value="Pichu">Pichu</option>
+        <option value="Pikachu">Pikachu</option>
+        <option value="Piranha">Piranha</option>
+        <option value="Pit">Pit</option>
+        <option value="PokémonTrainer">PokémonTrainer</option>
+        <option value="Richter">Richter</option>
+        <option value="Ridley">Ridley</option>
+        <option value="ROB">ROB</option>
+        <option value="Robin">Robin</option>
+        <option value="Rosalina">Rosalina</option>
+        <option value="Roy">Roy</option>
+        <option value="Ryu">Ryu</option>
+        <option value="Samus">Samus</option>
+        <option value="Sheik">Sheik</option>
+        <option value="Shulk">Shulk</option>
+        <option value="Simon">Simon</option>
+        <option value="Snake">Snake</option>
+        <option value="Sonic">Sonic</option>
+        <option value="Terry">Terry</option>
+        <option value="ToonLink">ToonLink</option>
+        <option value="Villager">Villager</option>
+        <option value="Wario">Wario</option>
+        <option value="WiiFitTrainer">WiiFitTrainer</option>
+        <option value="Wolf">Wolf</option>
+        <option value="Yoshi">Yoshi</option>
+        <option value="YoungLink">YoungLink</option>
+        <option value="Zelda">Zelda</option>
+        <option value="ZeroSuitSamus">ZeroSuitSamus</option>
+      </select><br>
+
+      <input type="submit" value="Submit">
+
+    </form>
+  </div>
+
+  <div>
+
+    <ul id='formSubmits'>
+      <li><form action="/controlPanel" method="post" id="backupTournamentForm" class='formSubmits'>
+        <input type='text' name='formIdentifier' value='backupTournamentForm' id='hidden'></input>
+        <input type="submit" value="Backup Tournament" id='buttons'>
+      </form></li>
+
+    <li><form action="/controlPanel" method="post" id="retrieveBackupTournamentForm" class='formSubmits'>
+        <input type='text' name='formIdentifier' value='retrieveBackupTournamentForm' id='hidden'></input>
+        <input type="submit" value="Retrieve Backup of Tournament" id='buttons'>
+      </form></li>
+    </ul>
+
+  </div>
+
+  {% if currentGame != None %}
+    <div id="currentGame">
+      <h2>Current Game</h2>
+      <table>
+        <th>GameID</th><th>Name</th><th>Character</th><th>Score</th>
+        <tr><td>{{currentGame.ID}}</td><td>{{currentGame.player1.IGN}}</td><td>{{currentGame.player1Char}}</td><td>{{currentGame.score[0]}}</td></tr>
+        <tr><td></td><td>{{currentGame.player2.IGN}}</td><td>{{currentGame.player2Char}}</td><td>{{currentGame.score[1]}}</td></tr>
+      </table>
+    </div>
+  {% endif %}
+
+  <div>
+    <iframe src="{{ url_for('bracketPage') }}" id="bracket"></iframe>
+  </div>
 
 
 
