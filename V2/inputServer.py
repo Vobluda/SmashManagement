@@ -33,7 +33,6 @@ class Game:
         self.winner = None
         self.score = [0,0]
         self.BO = 5
-        self.name = None
 
     def players(self, player1, player2, player1Char, player2Char, BO, name):
         self.player1 = player1
@@ -60,8 +59,6 @@ class PlayerManager:
 
 
 manager = PlayerManager()
-basicP1 = Player(1, 'Vobluda', 'Daisy', 'STA', 1)
-basicP2 = Player(2, 'Flux', 'Daisy', 'STA', 2)
 
 def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
@@ -205,8 +202,6 @@ def selectCurrentGame(GameID): #moves that game object into manager.currentGame
     if foundGame == False:
         print('Failed to find game')
 
-# def updateOverlayVals(GameID):
-
 # def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
 
@@ -253,7 +248,16 @@ def controlPanel():
             manager.currentGame.score[1] = int(request.form['p2Score'])
             updateBracket(manager.currentGame.ID, int(request.form['p1Score']), int(request.form['p2Score']))
 
+        if request.form['formIdentifier'] == 'changeCharacter':
+            manager.currentGame.player1Char = request.form['p1Char']
+            manager.currentGame.player2Char = request.form['p2Char']
 
+        if request.form['formIdentifier'] == 'changeScoreCharacter':
+            manager.currentGame.score[0] = int(request.form['p1Score'])
+            manager.currentGame.score[1] = int(request.form['p2Score'])
+            updateBracket(manager.currentGame.ID, int(request.form['p1Score']), int(request.form['p2Score']))
+            manager.currentGame.player1Char = request.form['p1Char']
+            manager.currentGame.player2Char = request.form['p2Char']
 
         if request.form['formIdentifier'] == 'backupTournamentForm':
             backup(manager.tournament, 'Backups/tournamentBackup')

@@ -1,19 +1,20 @@
 <html>
   <head>
     <link rel='shortcut icon' type='image/x-icon' href='Logo.ico'>
-    <link rel="stylesheet" href="AtomTesting.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="Overlay.css">
   </head>
 
   <body>
     <div>
-      <img src="Overlay.png" class="center">
+      <img src="Overlay2.png" class="center">
 
       <p id="left">{{ game.player1.IGN }}</p>
       <p id="right">{{ game.player2.IGN }}</p>
-      <p id="leftNum">{{ game.player1.score }}</p>
-      <p id="rightNum">{{ game.player2.score }}</p>
-      <p id="status">{{ game.name }}</p>
+      <p id="leftNum">{{ game.score[0] }}</p>
+      <p id="rightNum">{{ game.score[1] }}</p>
+      <div id="center">
+        <p id="status">{{ game.name }}</p>
+      </div>
       <img src="{{ game.player1Char }}.png" class="leftIcon">
       <img src="{{ game.player2Char }}.png" id="rightIcon" height="30" width="30" class="rightIcon">
     </div>
