@@ -170,7 +170,7 @@ def createSingleElimTournament(playerList):
 def formatSingleElimTable(tournament):
     roundNumber = len(tournament.rounds)
     gameNumber = int(2 ** roundNumber) - 1
-    tableList = [[""] * roundNumber] * gameNumber
+    tableList = [["" for j in range(roundNumber)] for i in range(gameNumber)]
     prespace = 0
     midspace = 1
     for current_col in range(roundNumber):
@@ -243,9 +243,6 @@ def bracketPage():
     try:
         if manager.tournament.type == 'se':
             table = formatSingleElimTable(manager.tournament)
-            print(table)
-            for list in table:
-                print(list[0].player1.IGN)
             return render_template('SingleElimTemplate.html', tournament=manager.tournament,
                                    numRounds=len(manager.tournament.rounds),
                                    tournamentTable=formatSingleElimTable(manager.tournament))
