@@ -14,6 +14,9 @@
     {% for row in tournamentTable %}
       <tr>
         {% for item in row %}
+          {% if item is string %}
+            <td></td>
+          {% else %}
             <td>
               <table>
                 <colgroup>
@@ -25,6 +28,7 @@
                 <tr><td></td><td>{{item.player2.IGN}}</td><td>{{item.score[1]}}</td></tr>
               </table>
             </td>
+          {% endif %}
 
         {% endfor %}
       </tr>

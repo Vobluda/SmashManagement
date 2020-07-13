@@ -240,14 +240,13 @@ def overlayPage():
 
 @app.route('/bracket', methods=['GET'])
 def bracketPage():
-    try:
+#    try:
         if manager.tournament.type == 'se':
-            table = formatSingleElimTable(manager.tournament)
             return render_template('SingleElimTemplate.html', tournament=manager.tournament,
                                    numRounds=len(manager.tournament.rounds),
                                    tournamentTable=formatSingleElimTable(manager.tournament))
-    except:
-        return render_template('Empty.html')
+    #except:
+    #    return render_template('Empty.html')
 
 
 @app.route('/controlPanel', methods=['GET', 'POST'])
