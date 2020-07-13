@@ -25,47 +25,47 @@ p, center {
 
 #right{
   position: fixed;
-  right: 506px;
-  top: 37px;
+  right: 630px;
+  top: 40px;
   text-align: right;
-  font-size: 30;
+  font-size: 40;
 }
 
 .rightIcon{
   position: fixed;
-  height: 30px;
-  width: 30px;
-  right: 50%;
-  top: 9.6%;
+  height: 40px;
+  width: 40px;
+  right: 49.5%;
+  top: 8.5%;
 }
 
 #rightNum{
   position: fixed;
-  right: 455px;
-  top: 22px;
+  right: 580px;
+  top: 42px;
   font-size: 40;
 }
 
 #left{
   position: fixed;
-  left: 504px;
-  top: 11.5px;
+  left: 630px;
+  top: 7px;
   text-align: left;
-  font-size: 30;
+  font-size: 40;
 }
 
 .leftIcon{
   position: fixed;
-  height: 30px;
-  width: 30px;
-  left: 49.5%;
-  top: 3.5%;
+  height: 40px;
+  width: 40px;
+  left: 49%;
+  top: 2.8%;
 }
 
 #leftNum{
   position: fixed;
-  left: 453px;
-  top: -5px;
+  left: 580px;
+  top: 8px;
   font-size: 40;
 }
 
