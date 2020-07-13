@@ -31,7 +31,7 @@ class Game:
         self.player1Char = None
         self.player2Char = None
         self.winner = None
-        self.score = [0,0]
+        self.score = [0, 0]
         self.BO = 5
 
     def players(self, player1, player2, player1Char, player2Char, BO, name):
@@ -47,7 +47,7 @@ class Tournament:
     def __init__(self):
         self.rounds = []
         self.currentGame = None
-        self.type = 'se' #NEEDS TO BE CHANGED WHEN DOUBLE ELIM IS IMPLMENTED
+        self.type = 'se'  # NEEDS TO BE CHANGED WHEN DOUBLE ELIM IS IMPLMENTED
 
 
 class PlayerManager:
@@ -60,15 +60,18 @@ class PlayerManager:
 
 manager = PlayerManager()
 
+
 def backup(object, fileName):
     with open(fileName, 'wb') as openedFile:
         pickle.dump(object, openedFile)
         print('Backup succesful')
 
+
 def readBackupPlayers(objectFile):
     with open(objectFile, 'rb') as openedFile:
         manager.playerList = pickle.load(openedFile)
     print('Backup of players retrieved')
+
 
 def readBackupTournament(objectFile):
     with open(objectFile, 'rb') as openedFile:
@@ -77,29 +80,37 @@ def readBackupTournament(objectFile):
 
 
 def createSeeding(playerList):  # Find players whose seeds are missing and assign them free seeds randomly.
-    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in
+             playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     valid_seeds = [i for i in seeds if i > 0]  # make a list with only the valid seeds, a seed is valid if > 0
-    missing_seed_indices = [i for i in range(len(seeds)) if not seeds[i] > 0]  # make a list with the indices of players that have missing seeds
+    missing_seed_indices = [i for i in range(len(seeds)) if
+                            not seeds[i] > 0]  # make a list with the indices of players that have missing seeds
     current_seed_value = 1  # set the loop counter to 1, because it's the lowest valid seed
     while missing_seed_indices:  # loop while there are still some missing seeds (list is True unless empty)
         if current_seed_value not in valid_seeds:  # if the current seed value has not yet been used
-            selected_player_index = random.choice(missing_seed_indices)  # pick a random player index with a missing seed
+            selected_player_index = random.choice(
+                missing_seed_indices)  # pick a random player index with a missing seed
             playerList[selected_player_index].seed = current_seed_value  # assign the player the current seed value
             missing_seed_indices.remove(selected_player_index)  # remove the player's index from the list
         current_seed_value += 1  # increment the counter
     return playerList  # return the modified playerList
 
 
-def areSeedsValid(playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
-    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
-    return min(seeds) > 0 and max(seeds) <= len(playerList)  # returns True if the lowest and highest seed are between 1 and the number of players.
+def areSeedsValid(
+        playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in
+             playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    return min(seeds) > 0 and max(seeds) <= len(
+        playerList)  # returns True if the lowest and highest seed are between 1 and the number of players.
 
 
 def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
-    seeds = [i.seed if (type(i.seed) == int) else 0 for i in playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
+    seeds = [i.seed if (type(i.seed) == int) else 0 for i in
+             playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     while 0 in seeds:
         seeds.remove(0)
-    seedsUnique = seeds == list(set(seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
+    seedsUnique = seeds == list(set(
+        seeds))  # compares the seeds list to a set of the seeds - converting to a set removes duplicates - True if unique
     return seedsUnique
 
 
@@ -110,7 +121,7 @@ def createSingleElimTemplate(playerNumber):
     for currentRound in range(0, roundNumber):  # loop over the round indices
         template.rounds.append([])
         if currentRound == 0:
-            template.rounds[currentRound] = [Game( 1, 2)]
+            template.rounds[currentRound] = [Game(1, 2)]
         else:
             for currentGame in range(int(2 ** currentRound)):
                 if currentGame % 2 == 0:
@@ -118,7 +129,7 @@ def createSingleElimTemplate(playerNumber):
                 else:
                     seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex2
                 seedindex2 = int(2 ** (currentRound + 1)) + 1 - seedindex1
-                template.rounds[currentRound].append(Game( seedindex1, seedindex2))
+                template.rounds[currentRound].append(Game(seedindex1, seedindex2))
     template.rounds = template.rounds[::-1]
     gameIDCounter = 0
     for curr_round in template.rounds:
@@ -155,10 +166,11 @@ def createSingleElimTournament(playerList):
             tournament.rounds[0][game_seed_index].player2 = player_with_seed
     return tournament
 
+
 def formatSingleElimTable(tournament):
     roundNumber = len(tournament.rounds)
     gameNumber = int(2 ** roundNumber) - 1
-    tableList = [[""]*roundNumber]*gameNumber
+    tableList = [[""] * roundNumber] * gameNumber
     prespace = 0
     midspace = 1
     for current_col in range(roundNumber):
@@ -171,27 +183,29 @@ def formatSingleElimTable(tournament):
         midspace = (midspace * 2) + 1
     return tableList
 
+
 def updateBracket(GameID, score1, score2):
-    #update Game score for GameID
+    # update Game score for GameID
     for round in manager.tournament.rounds:
         roundCounter = 0
         for game in round:
-            if game.score[0] > int(game.BO/2):
+            if game.score[0] > int(game.BO / 2):
                 game.winner = game.player1
-            elif game.score[1] > int(game.BO/2):
+            elif game.score[1] > int(game.BO / 2):
                 game.winner = game.player2
             else:
                 pass
-    #move winners onto next games
+            # move winners onto next games
             if game.winner != None:
                 if round.index(game) % 2 == 0:
-                    manager.tournament.rounds[roundCounter+1][int(round.index(game)/2)].player1 = game.winner
+                    manager.tournament.rounds[roundCounter + 1][int(round.index(game) / 2)].player1 = game.winner
                 if round.index(game) % 2 == 1:
-                    manager.tournament.rounds[roundCounter+1][int(round.index(game)/2)].player2 = game.winner
+                    manager.tournament.rounds[roundCounter + 1][int(round.index(game) / 2)].player2 = game.winner
 
         roundCounter = roundCounter + 1
 
-def selectCurrentGame(GameID): #moves that game object into manager.currentGame
+
+def selectCurrentGame(GameID):  # moves that game object into manager.currentGame
     foundGame = False
     for round in manager.tournament.rounds:
         for game in round:
@@ -202,24 +216,29 @@ def selectCurrentGame(GameID): #moves that game object into manager.currentGame
     if foundGame == False:
         print('Failed to find game')
 
+
 # def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
 
 manager = PlayerManager()
 
+
 @app.route('/')
 def default():
     return redirect('/controlPanel')
+
 
 @app.route('/<path:path>')
 def getImage(path):
     return app.send_static_file(path)
 
-@app.route('/overlay', methods = ['GET'])
+
+@app.route('/overlay', methods=['GET'])
 def overlayPage():
     return render_template('OverlayTemplate.html', game=manager.currentGame)
 
-@app.route('/bracket', methods = ['GET'])
+
+@app.route('/bracket', methods=['GET'])
 def bracketPage():
     try:
         if manager.tournament.type == 'se':
@@ -227,14 +246,17 @@ def bracketPage():
             print(table)
             for list in table:
                 print(list[0].player1.IGN)
-            return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds = len(manager.tournament.rounds), tournamentTable = formatSingleElimTable(manager.tournament))
+            return render_template('SingleElimTemplate.html', tournament=manager.tournament,
+                                   numRounds=len(manager.tournament.rounds),
+                                   tournamentTable=formatSingleElimTable(manager.tournament))
     except:
         return render_template('Empty.html')
 
-@app.route('/controlPanel', methods = ['GET', 'POST'])
+
+@app.route('/controlPanel', methods=['GET', 'POST'])
 def controlPanel():
     if request.method == 'GET':
-        return render_template('ControlPanelTemplate.html', currentGame = manager.currentGame)
+        return render_template('ControlPanelTemplate.html', currentGame=manager.currentGame)
     if request.method == 'POST':
 
         if request.form['formIdentifier'] == 'changeGame':
@@ -265,21 +287,21 @@ def controlPanel():
         if request.form['formIdentifier'] == 'retrieveBackupTournamentForm':
             readBackupTournament('Backups/tournamentBackup')
 
+        return render_template('ControlPanelTemplate.html', currentGame=manager.currentGame)
 
-        return render_template('ControlPanelTemplate.html', currentGame = manager.currentGame)
 
-
-@app.route('/setup', methods = ['GET', 'POST'])
+@app.route('/setup', methods=['GET', 'POST'])
 def setup():
     if request.method == 'GET':
-        return render_template('SetupTemplate.html', playerList = manager.playerList)
+        return render_template('SetupTemplate.html', playerList=manager.playerList)
     if request.method == 'POST':
 
         if request.form['formIdentifier'] == 'addForm':
             if request.form['seed'] == '':
                 player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], '')
             else:
-                player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+                player = Player(manager.ID, request.form['IGN'], request.form['main'], request.form['school'],
+                                request.form['seed'])
             manager.ID = manager.ID + 1
             manager.playerList.append(player)
 
@@ -287,13 +309,19 @@ def setup():
             try:
                 tempList = manager.playerList
                 if request.form['seed'] == '':
-                    manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], '')
+                    manager.playerList[int(request.form['ID']) - 1] = Player(request.form['ID'], request.form['IGN'],
+                                                                             request.form['main'],
+                                                                             request.form['school'], '')
                 else:
-                    manager.playerList[int(request.form['ID'])-1] = Player(request.form['ID'], request.form['IGN'], request.form['main'], request.form['school'], request.form['seed'])
+                    manager.playerList[int(request.form['ID']) - 1] = Player(request.form['ID'], request.form['IGN'],
+                                                                             request.form['main'],
+                                                                             request.form['school'],
+                                                                             request.form['seed'])
                 if areSeedsUnique(manager.playerList) == True:
                     print('Seeding finalised succesfully')
                 else:
-                    raise Exception('An error has occurred, as seeding is not unique. Try again') #NEED TO IMPLEMENT PROPER WARNING ON SITE
+                    raise Exception(
+                        'An error has occurred, as seeding is not unique. Try again')  # NEED TO IMPLEMENT PROPER WARNING ON SITE
                     manager.playerList = tempList
             except IndexError:
                 print("ID input is out of range")
@@ -330,7 +358,7 @@ def setup():
 
         elif request.form['formIdentifier'] == 'retrieveBackupForm':
             readBackupPlayers('Backups/playerBackup')
-            manager.ID = len(manager.playerList)+1
+            manager.ID = len(manager.playerList) + 1
 
         elif request.form['formIdentifier'] == 'makeBracketForm':
             manager.playerList = createSeeding(manager.playerList)
@@ -347,13 +375,14 @@ def setup():
                         print(game.player1.IGN + " vs " + game.player2.IGN)
                     except:
                         print("None vs None")
-                roundCounter = roundCounter + 1
+                roundCounter = roundCounter + 2
 
         else:
             print('This king of request is not valid: ' + request.form['formIdentifier'])
             raise Exception
 
-        return render_template('SetupTemplate.html', playerList = manager.playerList)
+        return render_template('SetupTemplate.html', playerList=manager.playerList)
+
 
 if __name__ == '__main__':
     app.run()
