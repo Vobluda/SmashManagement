@@ -19,6 +19,7 @@
         <option value='changeScore'>Change Score</option>
         <option value='changeCharacter'>Change character</option>
         <option value='changeScoreCharacter'>Change score & character</option>
+        <option value='changeBO'>Change series length</option>
       </select><br>
 
       <label>ID of current Game</label><br>
@@ -200,6 +201,9 @@
         <option value="ZeroSuitSamus">ZeroSuitSamus</option>
       </select><br>
 
+      <label>Series length (Best of)</label><br>
+      <input type="number" name="BO" value="{{currentGame.BO}}"></input><br>
+
       <input type="submit" value="Submit">
 
     </form>
@@ -227,7 +231,7 @@
       <table>
         <th>GameID</th><th>Name</th><th>Character</th><th>Score</th>
         <tr><td>{{currentGame.ID}}</td><td>{{currentGame.player1.IGN}}</td><td>{{currentGame.player1Char}}</td><td>{{currentGame.score[0]}}</td></tr>
-        <tr><td></td><td>{{currentGame.player2.IGN}}</td><td>{{currentGame.player2Char}}</td><td>{{currentGame.score[1]}}</td></tr>
+        <tr><td>{{"BO" ~ currentGame.BO}}</td><td>{{currentGame.player2.IGN}}</td><td>{{currentGame.player2Char}}</td><td>{{currentGame.score[1]}}</td></tr>
       </table>
     </div>
   {% endif %}

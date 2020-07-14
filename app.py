@@ -277,8 +277,19 @@ def controlPanel():
             manager.currentGame.player1Char = request.form['p1Char']
             manager.currentGame.player2Char = request.form['p2Char']
 
+        if request.form['formIdentifier'] == 'changeBO':
+            try:
+                manager.currentGame.BO = request.form['BO']
+            except:
+                pass
+            for round in manager.tournament.rounds:
+                for game in round:
+                    if game.ID == manager.currentGame.ID:
+                        game.BO = manager.currentGame.BO
+
         if request.form['formIdentifier'] == 'backupTournamentForm':
             backup(manager.tournament, 'Backups/tournamentBackup')
+
 
         if request.form['formIdentifier'] == 'retrieveBackupTournamentForm':
             readBackupTournament('Backups/tournamentBackup')

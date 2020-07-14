@@ -94,10 +94,10 @@ li form {
 }
 
 #bracket{
-     position: absolute;
-     bottom: 0;
-     right: 0;
-     max-width: 50%;
-     max-height: 30%;
-     border-width: 0px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 55%;
+  height: 60%;
+  border-width: 0px;
 }
