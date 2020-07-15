@@ -189,9 +189,9 @@ def updateBracket(GameID, score1, score2):
     for round in manager.tournament.rounds:
         roundCounter = 0
         for game in round:
-            if game.score[0] > int(game.BO / 2):
+            if game.score[0] > int(int(game.BO) / 2):
                 game.winner = game.player1
-            elif game.score[1] > int(game.BO / 2):
+            elif game.score[1] > int(int(game.BO) / 2):
                 game.winner = game.player2
             else:
                 pass
