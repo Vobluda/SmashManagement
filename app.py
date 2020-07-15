@@ -215,7 +215,8 @@ def selectCurrentGame(GameID):  # moves that game object into manager.currentGam
                 break
     if foundGame == False:
         print('Failed to find game')
-
+    manager.currentGame.player1Char = manager.currentGame.player1.main
+    manager.currentGame.player2Char = manager.currentGame.player2.main
 
 # def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
@@ -282,10 +283,17 @@ def controlPanel():
                 manager.currentGame.BO = request.form['BO']
             except:
                 pass
-            for round in manager.tournament.rounds:
-                for game in round:
-                    if game.ID == manager.currentGame.ID:
-                        game.BO = manager.currentGame.BO
+            try:
+                for round in manager.tournament.rounds:
+                    for game in round:
+                        if game.ID == manager.currentGame.ID:
+                            game.BO = manager.currentGame.BO
+            except AttributeError as e:
+                print("No game currently selected")
+                for round in manager.tournament.rounds:
+                    for game in round:
+                        if game.ID == request.form['gameID']:
+                            game.BO = request.form['BO']
 
         if request.form['formIdentifier'] == 'backupTournamentForm':
             backup(manager.tournament, 'Backups/tournamentBackup')
