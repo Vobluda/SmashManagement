@@ -166,6 +166,123 @@ def createSingleElimTournament(playerList):
             tournament.rounds[0][game_seed_index].player2 = player_with_seed
     return tournament
 
+def createDoubleElimTemplate(playerNumber):
+    #declare variables
+    finalTournament = Tournament()
+
+    #create upper bracket
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible round number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    template = Tournament()  # create a tournament object
+    for currentRound in range(0, roundNumber):  # loop over the round indices
+        template.rounds.append([])
+        if currentRound == 0:
+            template.rounds[currentRound] = [Game(1, 2)]
+        else:
+            for currentGame in range(int(2 ** currentRound)):
+                if currentGame % 2 == 0:
+                    seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex1
+                else:
+                    seedindex1 = template.rounds[currentRound - 1][currentGame // 2].seedindex2
+                seedindex2 = int(2 ** (currentRound + 1)) + 1 - seedindex1
+                template.rounds[currentRound].append(Game(seedindex1, seedindex2))
+    template.rounds = template.rounds[::-1]
+    gameIDCounter = 0
+    for curr_round in template.rounds:
+        for curr_game in curr_round:
+            gameIDCounter += 1
+            curr_game.ID = gameIDCounter
+    finalTournament.rounds.append(template)
+
+    #create lower bracket
+    roundNumber = int(2*len(finalTournament.rounds[0].rounds) - 3)  # finds number of rounds
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    template = Tournament()  # create a tournament object
+    wbCounter = 0
+    for roundCounter in range (0,roundNumber): #iterates until all rounds are created
+        if roundCounter == 0:
+            currentRound = []
+            gameNumber = int(len(finalTournament.rounds[0].rounds[0])/2)
+            for gameCounter in range(0,gameNumber):
+                currentRound.append(Game(0,0))
+            template.rounds.append(currentRound)
+            wbCounter += 1
+
+        elif roundCounter % 2 == 1:
+            currentRound = []
+            gameNumber = int(len(finalTournament.rounds[0].rounds[wbCounter]) / 2) + int(len(template.rounds[roundCounter-1])/2)
+            for gameCounter in range(0, gameNumber):
+                currentRound.append(Game(0, 0))
+            template.rounds.append(currentRound)
+            wbCounter += 2
+
+        else:
+            currentRound = []
+            gameNumber = int(len(template.rounds[roundCounter - 1]) / 2)
+            for gameCounter in range(0, gameNumber):
+                currentRound.append(Game(0, 0))
+            template.rounds.append(currentRound)
+
+        maxGameID = 0
+        for round in finalTournament.rounds[0].rounds:
+            for game in round:
+                maxGameID += 1
+
+        print("MAXID " + str(maxGameID))
+
+        gameIDCounter = 1
+        for round in template.rounds:
+            for game in round:
+                game.ID = maxGameID + gameIDCounter
+                gameIDCounter += 1
+
+    finalTournament.rounds.append(template)
+
+
+    #create finals
+    roundNumber = 2  # find the lowest possible round number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    template = Tournament()  # create a tournament object
+    for roundCounter in range(0, roundNumber):  # loop over the round indices
+        currentRound = []
+        currentRound.append(Game(0, 0))
+        template.rounds.append(currentRound)
+    for round in template.rounds:
+        for game in round:
+            game.ID = maxGameID + gameIDCounter
+            gameIDCounter += 1
+    finalTournament.rounds.append(template)
+
+    return finalTournament
+
+def createDoubleElimTournament(playerList):
+    playerList = createSeeding(playerList)
+    roundNumber = int(math.ceil(math.log(len(playerList), 2)))  # find the lowest possible game number
+    playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
+    while len(playerList) < playerNumber:
+        playerList.append(Player(len(playerList) + 1, "Null", "Null", "Null", 0))
+    playerList = createSeeding(playerList)
+    tournament = createDoubleElimTemplate(playerNumber)
+    for current_seed in range(1, playerNumber + 1):
+        player_with_seed = None
+        game_seed_index = None
+        seed_1_or_2 = None
+        for current_seed_b in range(playerNumber):
+            if playerList[current_seed_b].seed == current_seed:
+                player_with_seed = playerList[current_seed_b]
+            if tournament.rounds[0].rounds[0][current_seed_b // 2].seedindex1 == current_seed:
+                game_seed_index = current_seed_b // 2
+                seed_1_or_2 = 1
+            if tournament.rounds[0].rounds[0][current_seed_b // 2].seedindex2 == current_seed:
+                game_seed_index = current_seed_b // 2
+                seed_1_or_2 = 2
+        if seed_1_or_2 == 1:
+            tournament.rounds[0].rounds[0][game_seed_index].player1 = player_with_seed
+            tournament.rounds[0].rounds[0][game_seed_index].player1 = player_with_seed
+        elif seed_1_or_2 == 2:
+            tournament.rounds[0].rounds[0][game_seed_index].player2 = player_with_seed
+    return tournament
+
 
 def formatSingleElimTable(tournament):
     roundNumber = len(tournament.rounds)
@@ -220,8 +337,20 @@ def selectCurrentGame(GameID):  # moves that game object into manager.currentGam
 
 # def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
-
+playerList = []
 manager = PlayerManager()
+for counter in range(0,8):
+    playerList.append(Player('',str(counter),'Banjo&Kazooie','STA',0))
+tournament = createDoubleElimTournament(playerList)
+print(tournament)
+for bracket in tournament.rounds:
+    print("Amount of rounds in bracket: " + str(len(bracket.rounds)))
+    roundCounter = 0
+    for round in bracket.rounds:
+        print("Round " + str(roundCounter + 1) + ": " + str(round))
+        for game in round:
+            print(game.ID)
+        roundCounter += 1
 
 
 @app.route('/')
