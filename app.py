@@ -331,22 +331,6 @@ def formatDoubleElimTable(tournament):
     tableList[2][rowLen-1] = finalsTour.rounds[1][0]
     return tableList
 
-def debugtour():
-    playerList = []
-    manager = PlayerManager()
-    for counter in range(0, 16):
-        playerList.append(Player('', str(counter), 'Banjo&Kazooie', 'STA', 0))
-    return createDoubleElimTournament(playerList)
-
-def tabletest():
-    table = formatDoubleElimTable(debugtour())
-    for y in table:
-        for x in y:
-            if type(x) == str:
-                print(x,end=" |")
-            else:
-                print(x.ID,end=" |")
-        print("")
 
 def updateBracket():
     # update Game score for GameID
