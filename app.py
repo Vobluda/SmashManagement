@@ -700,7 +700,7 @@ def setup():
                 i = i + 1
             manager.tournament = createSingleElimTournament(manager.playerList)
             roundCounter = 1
-                roundCounter = roundCounter + 2
+            roundCounter = roundCounter + 2
 
         else:
             print('This king of request is not valid: ' + request.form['formIdentifier'])
