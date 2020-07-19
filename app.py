@@ -316,12 +316,25 @@ def formatDoubleElimTable(tournament):
     # add LB rows (1/2 of original WB rows)
     tableList += [["" for j in range(rowLen)] for i in range(initGameNum // 2)]
     lbFirstRow = initGameNum + 5
+    prespace = 0
+    midspace = 1
+    for current_col in range(len(losersTour.rounds)):
+        gameCounter = 0
+        for current_row in range(initGameNum // 2):
+            if current_row == prespace + (gameCounter * (midspace + 1)):
+                tableList[current_row+lbFirstRow][current_col] = losersTour.rounds[current_col][gameCounter]
+                gameCounter += 1
+        if (current_col + 1) % 2 == 0:
+            prespace = (prespace * 2) + 1
+            midspace = (midspace * 2) + 1
+    tableList[3][rowLen-2] = finalsTour.rounds[0][0]
+    tableList[2][rowLen-1] = finalsTour.rounds[1][0]
     return tableList
 
 def debugtour():
     playerList = []
     manager = PlayerManager()
-    for counter in range(0, 8):
+    for counter in range(0, 16):
         playerList.append(Player('', str(counter), 'Banjo&Kazooie', 'STA', 0))
     return createDoubleElimTournament(playerList)
 
@@ -330,9 +343,10 @@ def tabletest():
     for y in table:
         for x in y:
             if type(x) == str:
-                print(x)
+                print(x,end=" |")
             else:
-                print(x.ID)
+                print(x.ID,end=" |")
+        print("")
 
 def updateBracket():
     # update Game score for GameID
