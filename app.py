@@ -184,6 +184,42 @@ def formatSingleElimTable(tournament):
     return tableList
 
 
+def formatDoubleElimTable(tournament):
+    winnersTour = tournament.rounds[0]
+    losersTour = tournament.rounds[1]
+    finalsTour = tournament.rounds[2]
+    tableList = formatSingleElimTable(winnersTour)
+    initGameNum = len(tableList)
+    initRoundNum = len(tableList[0])
+    # add 3 cols to all rows
+    for current_row in tableList:
+        current_row += ["" for j in range(3)]
+    rowLen = initRoundNum + 3
+    # add the wb header and an empty row before the tableList
+    tableList = [["Round" + str(roundnr) for roundnr in range(1, initRoundNum + 1)] + ["","Finals Round 1","Finals Round 2"]] + [["" for j in range(rowLen)]] + tableList
+    # add an empty row, the lb header, and an empty row to the end of the tableList
+    tableList += [["" for j in range(rowLen)]] + [["Round" + str(roundnr) for roundnr in range(1, initRoundNum + 2)]+["",""]] + [["" for j in range(rowLen)]]
+    # add LB rows (1/2 of original WB rows)
+    tableList += [["" for j in range(rowLen)] for i in range(initGameNum // 2)]
+    lbFirstRow = initGameNum + 5
+    return tableList
+
+def debugtour():
+    playerList = []
+    manager = PlayerManager()
+    for counter in range(0, 8):
+        playerList.append(Player('', str(counter), 'Banjo&Kazooie', 'STA', 0))
+    return createDoubleElimTournament(playerList)
+
+def tabletest():
+    table = formatDoubleElimTable(debugtour())
+    for y in table:
+        for x in y:
+            if type(x) == str:
+                print(x)
+            else:
+                print(x.ID)
+
 def updateBracket(GameID, score1, score2):
     # update Game score for GameID
     for round in manager.tournament.rounds:
