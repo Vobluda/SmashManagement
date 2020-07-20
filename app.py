@@ -113,7 +113,7 @@ def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
 
 
 def createSingleElimTemplate(playerNumber):
-    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible round number
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  #find the lowest possible round number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     template = Tournament()  # create a tournament object
     for currentRound in range(0, roundNumber):  # loop over the round indices
@@ -557,16 +557,16 @@ def overlayPage():
 
 @app.route('/bracket', methods=['GET'])
 def bracketPage():
-    try:
-        if manager.tournament.type == 'se':
-            return render_template('SingleElimTemplate.html', tournament=manager.tournament,
-                                   numRounds=len(manager.tournament.rounds),
-                                   tournamentTable=formatSingleElimTable(manager.tournament))
-        if manager.tournament.type == 'de':
-            return render_template('DoubleElimTemplate.html', tournament=manager.tournament,
-                                   numRounds=len(manager.tournament.rounds))
-    except:
-        return render_template('Empty.html')
+    #try:
+    if manager.tournament.type == 'se':
+        print('SE')
+        return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds=len(manager.tournament.rounds),tournamentTable=formatSingleElimTable(manager.tournament))
+    if manager.tournament.type == 'de':
+        print('DE')
+        return render_template('DoubleElimTemplate.html', tournament=manager.tournament, numRounds=len(manager.tournament.rounds), tournamentTable=formatDoubleElimTable(manager.tournament))
+    '''except Exception as e:
+        print(e)
+        return render_template('Empty.html')'''
 
 
 @app.route('/controlPanel', methods=['GET', 'POST'])
@@ -690,15 +690,23 @@ def setup():
             readBackupPlayers('Backups/playerBackup')
             manager.ID = len(manager.playerList) + 1
 
-        elif request.form['formIdentifier'] == 'makeBracketForm':
+        elif request.form['formIdentifier'] == 'makeSEBracketForm':
             manager.playerList = createSeeding(manager.playerList)
             i = 1
             for player in manager.playerList:
                 player.ID = i
                 i = i + 1
             manager.tournament = createSingleElimTournament(manager.playerList)
-            roundCounter = 1
-            roundCounter = roundCounter + 2
+            manager.tournament.type = 'se'
+
+        elif request.form['formIdentifier'] == 'makeDEBracketForm':
+            manager.playerList = createSeeding(manager.playerList)
+            i = 1
+            for player in manager.playerList:
+                player.ID = i
+                i = i + 1
+            manager.tournament = createDoubleElimTournament(manager.playerList)
+            manager.tournament.type = 'de'
 
         else:
             print('This king of request is not valid: ' + request.form['formIdentifier'])

@@ -5,26 +5,18 @@
     <link rel='shortcut icon' type='image/x-icon' href='Logo.ico'>
   </head>
 
-  {% for bracket in tournament.rounds %}
-    <p>Bracket {{loop.index}}</p>
-    {% for round in bracket.rounds %}
-      <p>Round {{loop.index}}</p>
-      {% for game in round%}
-      <p>ID {{game.ID}}: {{game.player1.IGN}} vs {{game.player2.IGN}}</p>
-      {%endfor%}
-  {% endfor %}
-
-
-  <!--<table>
-    {% for bracket in tournament.rounds %}
-      <th>Bracket {{loop.index}}</th>
-    {% endfor %}
+  <table>
+    <!-- creates header of rounds -->
 
     {% for row in tournamentTable %}
       <tr>
         {% for item in row %}
           {% if item is string %}
-            <td></td>
+            {% if item == '' %}
+              <td></td>
+            {% else %}
+              <td>{{item}}</td>
+            {% endif %}
           {% else %}
             <td>
               <table>
@@ -42,5 +34,6 @@
         {% endfor %}
       </tr>
     {% endfor %}
-  </table>-->
+  </table>
+
 </html>
