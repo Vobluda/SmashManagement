@@ -709,7 +709,7 @@ def setup():
             manager.tournament.type = 'de'
 
         else:
-            print('This king of request is not valid: ' + request.form['formIdentifier'])
+            print('This kind of request is not valid: ' + request.form['formIdentifier'])
             raise Exception
 
         return render_template('SetupTemplate.html', playerList=manager.playerList)
