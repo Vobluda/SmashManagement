@@ -1,0 +1,43 @@
+p{
+  font-family: NexaLight;
+  color: black;
+}
+
+.center{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+#right {
+    position: fixed;
+    right: 750px;
+    bottom: 40px;
+    text-align: right;
+    font-size: 100px;
+    margin-bottom: 0px;
+}
+
+#rightNum{
+  position: fixed;
+  right: 580px;
+  top: 42px;
+  font-size: 40;
+}
+
+#left {
+    position: fixed;
+    left: 40px;
+    bottom: 40px;
+    text-align: right;
+    font-size: 100px;
+    margin-bottom: 0px;
+}
+
+#leftNum{
+  position: fixed;
+  left: 580px;
+  top: 8px;
+  font-size: 40;
+}

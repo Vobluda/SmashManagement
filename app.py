@@ -1,6 +1,7 @@
 import math
 import pickle
 import random  # for assigning seeds to random players
+import json
 
 from flask import Flask, request, render_template, redirect
 
@@ -94,8 +95,7 @@ def createSeeding(playerList):  # Find players whose seeds are missing and assig
     return playerList  # return the modified playerList
 
 
-def areSeedsValid(
-        playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
+def areSeedsValid(playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in
              playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     return min(seeds) > 0 and max(seeds) <= len(
@@ -345,7 +345,7 @@ def updateBracket():
                 else:
                     pass
                 # move winners onto next games
-                if roundCounter != len(manager.tournament.rounds[0].rounds) - 1:
+                if roundCounter != len(manager.tournament.rounds) - 1:
                     if game.winner != None:
                         if round.index(game) % 2 == 0:
                             manager.tournament.rounds[roundCounter + 1][
@@ -537,6 +537,15 @@ def selectCurrentGame(GameID):  # moves that game object into manager.currentGam
 def roundLol(int1):
     return round(int1)
 
+def changeBreak():
+    dic = {}
+    dic['P1'] = manager.currentGame.player1.IGN
+    dic['P2'] = manager.currentGame.player2.IGN
+    dic['Score1'] = manager.currentGame.score[0]
+    dic['Score2'] = manager.currentGame.score[1]
+    with open('Static/BreakData.json', 'w') as fp:
+        json.dump(dic, fp)
+
 
 # def manualOverwrite(GameID, IGN1, Character1, Score1, IGN2, Character2, Score2, BO, gameName):
 
@@ -578,6 +587,7 @@ def controlPanel():
         if request.form['formIdentifier'] == 'changeGame':
             try:
                 selectCurrentGame(int(request.form['gameID']))
+                changeBreak()
             except:
                 print('Error occured while trying to select game')
 
@@ -585,6 +595,7 @@ def controlPanel():
             try:
                 manager.currentGame.score[0] = int(request.form['p1Score'])
                 manager.currentGame.score[1] = int(request.form['p2Score'])
+                changeBreak()
             except:
                 pass
             updateBracket()
@@ -602,6 +613,7 @@ def controlPanel():
                 manager.currentGame.score[1] = int(request.form['p2Score'])
                 manager.currentGame.player1Char = request.form['p1Char']
                 manager.currentGame.player2Char = request.form['p2Char']
+                changeBreak()
             except:
                 pass
             updateBracket()
@@ -714,6 +726,10 @@ def setup():
 
         return render_template('SetupTemplate.html', playerList=manager.playerList)
 
+
+@app.route('/break')
+def breakScreen():
+    return render_template('BreakTemplate.html', game=manager.currentGame)
 
 if __name__ == '__main__':
     app.run()

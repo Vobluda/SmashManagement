@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel='shortcut icon' type='image/x-icon' href='Logo.ico'>
+    <link rel="stylesheet" href="Break.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div>
+        <img src="Break.png" class="center">
+            <p id="left">{{ game.player1.IGN }} - {{ game.score[0] }}</p>
+            <p id="right">{{ game.score[1] }} - {{ game.player2.IGN }}</p>
+
+        <script>
+            window.setInterval(function(){
+              $.get('/BreakData.json', '', function (data, textStatus, jqXHR) {
+                            var obj = data
+                            document.getElementById("left").innerHTML = obj.P1 + ' - ' + obj.Score1;
+                            document.getElementById("right").innerHTML = obj.Score2 + ' - ' + obj.P2;
+                        })}, 5000);
+
+        </script>
+    </div>
+</body>
+</html>
