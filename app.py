@@ -730,6 +730,3 @@ def setup():
 @app.route('/break')
 def breakScreen():
     return render_template('BreakTemplate.html', game=manager.currentGame)
-
-if __name__ == '__main__':
-    app.run()
