@@ -5,7 +5,7 @@ import json
 
 from flask import Flask, request, render_template, redirect
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='static')
 app.config.from_object('config')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -95,7 +95,8 @@ def createSeeding(playerList):  # Find players whose seeds are missing and assig
     return playerList  # return the modified playerList
 
 
-def areSeedsValid(playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
+def areSeedsValid(
+        playerList):  # Returns True if all seeds are valid but not unique (i.e. between 1 and the number of players)
     seeds = [i.seed if (type(i.seed) == int) else 0 for i in
              playerList]  # iterate over the playerList and get the player seeds into one handy list. Non-ints are converted to 0.
     return min(seeds) > 0 and max(seeds) <= len(
@@ -113,7 +114,7 @@ def areSeedsUnique(playerList):  # Returns True if players have unique seeds.
 
 
 def createSingleElimTemplate(playerNumber):
-    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  #find the lowest possible round number
+    roundNumber = int(math.ceil(math.log(playerNumber, 2)))  # find the lowest possible round number
     playerNumber = int(2 ** roundNumber)  # find the player number (including voids)
     template = Tournament()  # create a tournament object
     for currentRound in range(0, roundNumber):  # loop over the round indices
@@ -298,6 +299,7 @@ def formatSingleElimTable(tournament):
         midspace = (midspace * 2) + 1
     return tableList
 
+
 def formatDoubleElimTable(tournament):
     winnersTour = tournament.rounds[0]
     losersTour = tournament.rounds[1]
@@ -310,9 +312,12 @@ def formatDoubleElimTable(tournament):
         current_row += ["" for j in range(3)]
     rowLen = initRoundNum + 3
     # add the wb header and an empty row before the tableList
-    tableList = [["Round" + str(roundnr) for roundnr in range(1, initRoundNum + 1)] + ["","Finals Round 1","Finals Round 2"]] + [["" for j in range(rowLen)]] + tableList
+    tableList = [["Round" + str(roundnr) for roundnr in range(1, initRoundNum + 1)] + ["", "Finals Round 1",
+                                                                                       "Finals Round 2"]] + [
+                    ["" for j in range(rowLen)]] + tableList
     # add an empty row, the lb header, and an empty row to the end of the tableList
-    tableList += [["" for j in range(rowLen)]] + [["Round" + str(roundnr) for roundnr in range(1, initRoundNum + 2)]+["",""]] + [["" for j in range(rowLen)]]
+    tableList += [["" for j in range(rowLen)]] + [
+        ["Round" + str(roundnr) for roundnr in range(1, initRoundNum + 2)] + ["", ""]] + [["" for j in range(rowLen)]]
     # add LB rows (1/2 of original WB rows)
     tableList += [["" for j in range(rowLen)] for i in range(initGameNum // 2)]
     lbFirstRow = initGameNum + 5
@@ -322,13 +327,13 @@ def formatDoubleElimTable(tournament):
         gameCounter = 0
         for current_row in range(initGameNum // 2):
             if current_row == prespace + (gameCounter * (midspace + 1)):
-                tableList[current_row+lbFirstRow][current_col] = losersTour.rounds[current_col][gameCounter]
+                tableList[current_row + lbFirstRow][current_col] = losersTour.rounds[current_col][gameCounter]
                 gameCounter += 1
         if (current_col + 1) % 2 == 0:
             prespace = (prespace * 2) + 1
             midspace = (midspace * 2) + 1
-    tableList[3][rowLen-2] = finalsTour.rounds[0][0]
-    tableList[2][rowLen-1] = finalsTour.rounds[1][0]
+    tableList[3][rowLen - 2] = finalsTour.rounds[0][0]
+    tableList[2][rowLen - 1] = finalsTour.rounds[1][0]
     return tableList
 
 
@@ -452,7 +457,8 @@ def updateBracket():
                     pass
 
                 if game.winner != None:
-                    if roundCounter == len(manager.tournament.rounds[1].rounds) - 1:  # if last round, do nothing as finals bracket fetches stuff itself
+                    if roundCounter == len(manager.tournament.rounds[
+                                               1].rounds) - 1:  # if last round, do nothing as finals bracket fetches stuff itself
                         pass
                     elif (roundCounter + 1) % 2 == 1:  # if next round takes from UB
                         manager.tournament.rounds[1].rounds[roundCounter + 1][gameCounter].player2 = game.winner
@@ -480,7 +486,8 @@ def updateBracket():
 
             if roundCounter == 0:
                 if manager.tournament.rounds[0].rounds[-1][0].winner != None:  # finds loser of UB finals
-                    if manager.tournament.rounds[0].rounds[-1][0].player1.ID == manager.tournament.rounds[0].rounds[-1][0].winner.ID:
+                    if manager.tournament.rounds[0].rounds[-1][0].player1.ID == manager.tournament.rounds[0].rounds[-1][
+                        0].winner.ID:
                         loser = manager.tournament.rounds[0].rounds[-1][0].player2
                     else:
                         loser = manager.tournament.rounds[0].rounds[-1][0].player1
@@ -537,13 +544,14 @@ def selectCurrentGame(GameID):  # moves that game object into manager.currentGam
 def roundLol(int1):
     return round(int1)
 
+
 def changeBreak():
     dic = {}
     dic['P1'] = manager.currentGame.player1.IGN
     dic['P2'] = manager.currentGame.player2.IGN
     dic['Score1'] = manager.currentGame.score[0]
     dic['Score2'] = manager.currentGame.score[1]
-    with open('Static/BreakData.json', 'w') as fp:
+    with open('static/BreakData.json', 'w') as fp:
         json.dump(dic, fp)
 
 
@@ -566,16 +574,20 @@ def overlayPage():
 
 @app.route('/bracket', methods=['GET'])
 def bracketPage():
-    #try:
-    if manager.tournament.type == 'se':
-        print('SE')
-        return render_template('SingleElimTemplate.html', tournament=manager.tournament, numRounds=len(manager.tournament.rounds),tournamentTable=formatSingleElimTable(manager.tournament))
-    if manager.tournament.type == 'de':
-        print('DE')
-        return render_template('DoubleElimTemplate.html', tournament=manager.tournament, numRounds=len(manager.tournament.rounds), tournamentTable=formatDoubleElimTable(manager.tournament))
-    '''except Exception as e:
+    try:
+        if manager.tournament.type == 'se':
+            print('SE')
+            return render_template('SingleElimTemplate.html', tournament=manager.tournament,
+                                   numRounds=len(manager.tournament.rounds),
+                                   tournamentTable=formatSingleElimTable(manager.tournament))
+        if manager.tournament.type == 'de':
+            print('DE')
+            return render_template('DoubleElimTemplate.html', tournament=manager.tournament,
+                                   numRounds=len(manager.tournament.rounds),
+                                   tournamentTable=formatDoubleElimTable(manager.tournament))
+    except Exception as e:
         print(e)
-        return render_template('Empty.html')'''
+        return render_template('Empty.html')
 
 
 @app.route('/controlPanel', methods=['GET', 'POST'])
@@ -730,3 +742,7 @@ def setup():
 @app.route('/break')
 def breakScreen():
     return render_template('BreakTemplate.html', game=manager.currentGame)
+
+
+if __name__ == "__main__":
+    app.run(host = '0.0.0.0', port = 80)
